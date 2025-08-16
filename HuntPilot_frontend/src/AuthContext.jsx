@@ -6,11 +6,9 @@ export const AuthProvider = ({children})=>{
 //       : null);
 // const [token,setToken] = useState(localStorage.getItem("token")|| "");
 
-  // ✅ 1. Start with empty token/user
   const [token, setToken] = useState("");
   const [user, setUser] = useState(null);
 
-  // ✅ 2. Restore token/user from localStorage on first load
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -18,7 +16,6 @@ export const AuthProvider = ({children})=>{
     if (storedToken) setToken(storedToken);
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
-
 
 const login= ({token,user}) =>{//data sent by backend
 setUser(user);

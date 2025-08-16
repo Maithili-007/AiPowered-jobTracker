@@ -77,8 +77,8 @@ export default function JobDetail() {
 return (
     <div className="container my-5">
       {/* Back Link */}
-      <Link to="/dashboard" className="btn btn-outline-secondary mb-4">
-        &larr; Back to Dashboard
+      <Link to="/jobs" className="btn btn-outline-secondary mb-4">
+        &larr; Back to Jobs
       </Link>
 
       {/* Job Detail Card */}
@@ -94,12 +94,6 @@ return (
               onClick={() => setEditingJob(job)}
             >
               Edit
-            </button>
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => window.location.reload()}
-            >
-              Refresh
             </button>
           </div>
         </div>
@@ -143,7 +137,7 @@ return (
               )}
 
               {/* Keywords Extracted */}
-              {job.keywords && job.keywords.length > 0 && (
+              {/* {job.keywords && job.keywords.length > 0 && (
                 <div className="mb-4">
                   <strong>Extracted Keywords:</strong>
                   <div className="mt-2">
@@ -154,7 +148,7 @@ return (
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Profile Match Section */}
               {matchResult && matchResult.error ? (

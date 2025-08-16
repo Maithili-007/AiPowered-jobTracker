@@ -54,7 +54,8 @@ useEffect(() => {
       const { keywords } = await resp.json();
       setSuggestedKeywords(keywords);
       if (selectedKeywords.length === 0) {
-        setSelectedKeywords(keywords.slice(0, 5));
+        //setSelectedKeywords(keywords.slice(0, 5));
+        setSelectedKeywords(keywords);
       }
     } catch (e) {
       console.error('Fetch error:', e.message);

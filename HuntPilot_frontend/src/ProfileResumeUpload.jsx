@@ -6,7 +6,6 @@ export default function ProfileResumeUpload(){
   const {token} = useContext(AuthContext);
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
-  const [keywords, setKeywords] = useState([]);
   const [resumeFilename, setResumeFilename] = useState('');
   const [showUpload, setShowUpload] = useState(false);
 
@@ -16,14 +15,11 @@ export default function ProfileResumeUpload(){
       const res = await axios.get('/api/profile/resume', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log('Resume API response:', res.data);
       setResumeFilename(res.data.resumeFilename);
-      setKeywords(res.data.resumeKeywords);
     } catch {
       setMessage('Failed to load resume info');
     }
   }
-
   if (token) {
     fetchResume();
   }
@@ -33,8 +29,8 @@ export default function ProfileResumeUpload(){
     e.preventDefault();
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('resume', file);
+    const formData = new FormData();//creates object
+    formData.append('resume', file);//Adds the file to the form data under the key "resume"
 
     try {
       const res = await axios.post('/api/profile/upload-resume', formData, {
@@ -43,9 +39,7 @@ export default function ProfileResumeUpload(){
           Authorization: `Bearer ${token}`,
         },
       });
-
       setMessage(res.data.message);
-      setKeywords(res.data.keywords);
       setResumeFilename(file.name);
       setFile(null);
       setShowUpload(false);
@@ -54,7 +48,6 @@ export default function ProfileResumeUpload(){
     }
   };
 
-  // Delete resume
   const handleDelete = async () => {
     try {
       const res = await axios.delete('/api/profile/resume', {
@@ -62,7 +55,6 @@ export default function ProfileResumeUpload(){
       });
       setMessage(res.data.message);
       setResumeFilename('');
-      setKeywords([]);
       setFile(null);
       setShowUpload(false);
     } catch {
@@ -74,14 +66,13 @@ export default function ProfileResumeUpload(){
     try {
       const response = await axios.get( 'http://localhost:5000/api/profile/resume/download', {
         headers: { Authorization: `Bearer ${token}` },
-        responseType: 'blob'
+        responseType: 'blob'//tells Axios to handle the file as binary data
       });
-      // Create a blob URL and download
-      const blob = new Blob([response.data], { type: response.headers['content-type'] });
-      const url = URL.createObjectURL(blob);
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });//Wraps the raw data in a Blob so the browser can treat it like a real file
+      const url = URL.createObjectURL(blob);//Creates a temporary file URL
       const link = document.createElement('a');
       link.href = url;
-      link.download = resumeFilename;  // your state variable
+      link.download = resumeFilename; 
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -125,18 +116,6 @@ export default function ProfileResumeUpload(){
                 </button>
               </div>
             </div>
-            {keywords.length > 0 && (
-              <div className="mb-3">
-                <h6 className="card-subtitle text-muted mb-2">
-                  Extracted Keywords
-                </h6>
-                {keywords.map((kw, idx) => (
-                  <span key={idx} className="badge bg-secondary me-1 mb-1">
-                    {kw}
-                  </span>
-                ))}
-              </div>
-            )}
           </>
         ) : (
           <div className="text-center mb-3">
