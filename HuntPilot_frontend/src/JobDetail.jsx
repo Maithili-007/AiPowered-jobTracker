@@ -14,7 +14,7 @@ export default function JobDetail() {
 
   useEffect(() => {
     axios
-      .get(`https://aipowered-jobtracker.onrender.com/api/jobs/${id}`, {
+      .get(`http://localhost:5000/api/jobs/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => setJob(res.data))
@@ -57,7 +57,7 @@ export default function JobDetail() {
   const handleDeleteClick= async (id)=>{
   if (!window.confirm('Are you sure you want to delete this job?')) return;
   try{
-   await axios.delete(`https://aipowered-jobtracker.onrender.com/api/jobs/${id}`, {headers: { Authorization: `Bearer ${token}` }, });
+   await axios.delete(`http://localhost:5000/api/jobs/${id}`, {headers: { Authorization: `Bearer ${token}` }, });
    setJob(jobs.filter(job=> job._id !== id));
     setMessage('Job deleted successfully!');
    }

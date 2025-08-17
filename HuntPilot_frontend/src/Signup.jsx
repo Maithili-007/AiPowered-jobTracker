@@ -14,7 +14,7 @@ const handleSubmit =async(e)=>{
 e.preventDefault();
 
 try{
-await axios.post("https://aipowered-jobtracker.onrender.com/api/auth/signup",form);
+await axios.post("http://localhost:5000/api/auth/signup",form);
 setMessage("Account created! Please login.");
 setForm({ name:"", email: "", password: "" });
 }

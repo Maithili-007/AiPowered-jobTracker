@@ -64,7 +64,7 @@ export default function ProfileResumeUpload(){
 
    const handleDownload = async () => {
     try {
-      const response = await axios.get( 'https://aipowered-jobtracker.onrender.com/api/profile/resume/download', {
+      const response = await axios.get( 'http://localhost:5000/api/profile/resume/download', {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'//tells Axios to handle the file as binary data
       });
