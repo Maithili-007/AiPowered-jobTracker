@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches
+.pytest_cache/
+
+# Virtual environment
+venv/
+.env/
+*.env
+
+# NLTK data (if downloaded locally)
+nltk_data/
+AppData/
+Roaming/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+
+# Test results/logs
+*.log
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Optional: OS temporary files
+*.swp
+*.swo
+*~
+
+# Optional: Jupyter/IPython notebook checkpoints
+.ipynb_checkpoints/
