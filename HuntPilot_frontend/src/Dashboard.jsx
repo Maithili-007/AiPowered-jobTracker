@@ -17,7 +17,7 @@ export default function Dashboard() {
   useEffect(() => {
      console.log("Token in effect:", token); 
     if(!token) return;
-    axios.get('http://localhost:5000/api/jobs', {
+    axios.get('https://aipowered-jobtracker.onrender.com/api/jobs', {
       headers: { Authorization: `Bearer ${token}` }
     })
      .then((res) => {
