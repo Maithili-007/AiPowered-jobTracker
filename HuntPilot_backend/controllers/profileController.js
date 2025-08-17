@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const User = require('../models/User');
 const fs = require('fs');
 const axios = require('axios');
 const pdfParse = require('pdf-parse');
