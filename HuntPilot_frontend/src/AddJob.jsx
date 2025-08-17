@@ -70,7 +70,7 @@ useEffect(() => {
   const handleSubmit= async (e)=>{
     e.preventDefault();
     const isEdit = !!(initialData && initialData._id);
-    const url = isEdit?`http://localhost:5000/api/jobs/${initialData._id}`: 'http://localhost:5000/api/jobs';
+    const url = isEdit?`https://aipowered-jobtracker.onrender.com/api/jobs/${initialData._id}`: 'https://aipowered-jobtracker.onrender.com/api/jobs';
     const method = isEdit? "put":"post";
 
     const payload = {
