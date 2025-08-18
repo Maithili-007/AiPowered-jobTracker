@@ -22,7 +22,7 @@ let text;
       return res.status(400).json({ error: 'Only PDF or plain-text resumes are supported' });
     }
 
-const {data} =  await axios.post('http://localhost:5001/extract-keywords',{description:text});
+const {data} =  await axios.post('https://aipowered-jobtracker-1.onrender.com/extract-keywords',{description:text});
 
 await User.findByIdAndUpdate(userId,{
   resumeKeywords:data.keywords,
