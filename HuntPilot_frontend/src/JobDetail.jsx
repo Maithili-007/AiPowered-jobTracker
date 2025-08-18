@@ -4,12 +4,6 @@ import axios from 'axios';
 import AuthContext from './AuthContext';
 import AddJob from './AddJob';
 
-import React, { useEffect, useState, useContext } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import AuthContext from './AuthContext';
-import AddJob from './AddJob';
-
 export default function JobDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
