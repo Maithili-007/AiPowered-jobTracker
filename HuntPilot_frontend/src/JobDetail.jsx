@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom'; // useNavigate for v6
 import axios from 'axios';
 import AuthContext from './AuthContext';
 import AddJob from './AddJob';
@@ -12,7 +12,6 @@ export default function JobDetail() {
   const [error, setError] = useState('');
   const [editingJob, setEditingJob] = useState(null);
   const [matchResult, setMatchResult] = useState(null);
-  const [message, setMessage] = useState('');
 
   // Fetch job details
   useEffect(() => {
@@ -64,15 +63,10 @@ export default function JobDetail() {
         `https://aipowered-jobtracker.onrender.com/api/jobs/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setMessage('Job deleted successfully!');
-      navigate('/jobs'); // redirect back to jobs list
+      navigate('/jobs'); // redirect after delete
     } catch {
-      setMessage('Failed to delete job.');
+      alert('Failed to delete job.');
     }
-  };
-
-  const handleSuccess = () => {
-    setEditingJob(null);
   };
 
   if (error) return <p className="text-danger">{error}</p>;
@@ -85,9 +79,6 @@ export default function JobDetail() {
         &larr; Back to Jobs
       </Link>
 
-      {/* Success/Failure Message */}
-      {message && <div className="alert alert-info">{message}</div>}
-
       {/* Job Detail Card */}
       <div className="card shadow-sm">
         {/* Header */}
@@ -97,14 +88,15 @@ export default function JobDetail() {
             <small>{job.company}</small>
           </div>
           <div className="d-flex gap-2">
+            {/* Styled Buttons */}
             <button
-              className="btn btn-warning btn-sm fw-semibold px-3"
+              className="btn btn-sm btn-outline-light fw-semibold px-3 d-flex align-items-center gap-1"
               onClick={() => setEditingJob(job)}
             >
               ✏️ Edit
             </button>
             <button
-              className="btn btn-danger btn-sm fw-semibold px-3"
+              className="btn btn-sm btn-danger fw-semibold px-3 d-flex align-items-center gap-1"
               onClick={handleDeleteClick}
             >
               🗑️ Delete
@@ -231,4 +223,6 @@ export default function JobDetail() {
     </div>
   );
 }
+
+
 
