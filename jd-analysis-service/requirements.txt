@@ -1,7 +1,8 @@
 Flask
 pytest
 spacy
-rake-nltk
+rake-nltk==1.0.6
+flask-cors
 yake
 nltk
 gunicorn

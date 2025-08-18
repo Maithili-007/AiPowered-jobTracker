@@ -5,13 +5,17 @@ import yake
 import nltk
 import os
 import traceback
+from flask_cors import CORS
+
+
 
 # 🧠 Fix nltk path issue (makes sure it looks in correct directory)
-nltk.data.path.append(os.path.join(os.path.expanduser("~"), "AppData", "Roaming", "nltk_data"))
+# nltk.data.path.append(os.path.join(os.path.expanduser("~"), "AppData", "Roaming", "nltk_data"))
 nltk.download('punkt')
 nltk.download('stopwords')
 
 app = Flask(__name__)#initializes your Flask app
+CORS(app)
 
 # 🔧 Load models and extractors once
 nlp = spacy.load('en_core_web_sm')
