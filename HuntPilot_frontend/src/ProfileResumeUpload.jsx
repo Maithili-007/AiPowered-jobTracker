@@ -12,7 +12,7 @@ export default function ProfileResumeUpload(){
  useEffect(() => {
   async function fetchResume() {
     try {
-      const res = await axios.get('/api/profile/resume', {
+      const res = await axios.get('https://aipowered-jobtracker.onrender.com/api/profile/resume', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setResumeFilename(res.data.resumeFilename);
@@ -33,7 +33,7 @@ export default function ProfileResumeUpload(){
     formData.append('resume', file);//Adds the file to the form data under the key "resume"
 
     try {
-      const res = await axios.post('/api/profile/upload-resume', formData, {
+      const res = await axios.post('https://aipowered-jobtracker.onrender.com/api/profile/upload-resume', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -50,7 +50,7 @@ export default function ProfileResumeUpload(){
 
   const handleDelete = async () => {
     try {
-      const res = await axios.delete('/api/profile/resume', {
+      const res = await axios.delete('https://aipowered-jobtracker.onrender.com/api/profile/resume', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage(res.data.message);

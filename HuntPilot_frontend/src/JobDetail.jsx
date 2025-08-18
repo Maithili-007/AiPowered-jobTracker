@@ -28,7 +28,7 @@ export default function JobDetail() {
   useEffect(() => {
   async function fetchMatch() {
     try {
-      const res = await fetch(`/api/jobs/${id}/match-profile`, {
+      const res = await fetch(`https://aipowered-jobtracker.onrender.com/api/jobs/${id}/match-profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ export default function JobDetail() {
   const handleDeleteClick= async (id)=>{
   if (!window.confirm('Are you sure you want to delete this job?')) return;
   try{
-   await axios.delete(`https://aipowered-jobtracker.onrender.com /api/jobs/${id}`, {headers: { Authorization: `Bearer ${token}` }, });
+   await axios.delete(`https://aipowered-jobtracker.onrender.com/api/jobs/${id}`, {headers: { Authorization: `Bearer ${token}` }, });
    setJob(jobs.filter(job=> job._id !== id));
     setMessage('Job deleted successfully!');
    }
@@ -95,6 +95,12 @@ return (
             onClick={() => setEditingJob(job)}
           >
             Edit
+          </button>
+          <button
+            className="btn btn-light btn-sm"
+            onClick={handleDeleteClick}
+          >
+            Delete
           </button>
         </div>
       </div>
