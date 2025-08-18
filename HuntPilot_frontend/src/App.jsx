@@ -30,23 +30,28 @@ const RootRedirect = () => {
 };
 
 export default function App(){
- return (
-  <AuthProvider> 
-    {/* shares auth-related state (token, user info) with the whole app, no manual passing of props */}
-      <BrowserRouter>
-      <Navbar/>
+return (
+  <AuthProvider>
+    <BrowserRouter>
+      {/* Navbar only when NOT on login/signup */}
+      {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && (
+        <Navbar />
+      )}
+
+      <div className="container-fluid p-3">
         <Routes>
-        <Route path="/" element={<RootRedirect />} />
-        <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />
-        {/* decides at runtime whether to allow access or not */}
-        <Route path="/signup" element={<AuthRedirect><Signup /></AuthRedirect>} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/jobs" element={<ProtectedRoute><JobList /></ProtectedRoute>} />
-        <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
-        <Route path="/add-job" element={<ProtectedRoute><AddJob /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute> }/>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />
+          <Route path="/signup" element={<AuthRedirect><Signup /></AuthRedirect>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/jobs" element={<ProtectedRoute><JobList /></ProtectedRoute>} />
+          <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
+          <Route path="/add-job" element={<ProtectedRoute><AddJob /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  );
+      </div>
+    </BrowserRouter>
+  </AuthProvider>
+);
+
 }

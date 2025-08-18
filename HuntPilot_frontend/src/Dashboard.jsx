@@ -40,51 +40,70 @@ export default function Dashboard() {
   }, {});
 
   return (
-    <>
-    <div className="container my-4">
-      <h1 className="mb-4 text-center">Welcome {user?.name || 'User'} to Your Dashboard</h1>
+  <div className="container my-4">
+    {/* Welcome Heading */}
+    <h1 className="mb-4 text-center">
+      Welcome {user?.name || "User"} to Your Dashboard
+    </h1>
 
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
+    {/* Error Alert */}
+    {error && (
+      <div className="alert alert-danger text-center" role="alert">
+        {error}
+      </div>
+    )}
 
-      {/* Status Summary Cards */}
-      <div className="row mb-4 justify-content-center">
-        {['applied', 'interviewing', 'offer', 'rejected'].map(status => (
-          <div key={status} className="col-2 col-md-2 mb-0">
-            <div className={`card text-center text-white bg-${statusBadgeColors[status]}`}>
-              <div className="card-body">
-                <h5 className="card-title text-capitalize">{status}</h5>
-                <p className="card-text fs-3">{statusCounts[status] || 0}</p>
-              </div>
+    {/* Status Summary Cards */}
+    <div className="row g-3 mb-4 justify-content-center">
+      {["applied", "interviewing", "offer", "rejected"].map((status) => (
+        <div key={status} className="col-6 col-md-3">
+          <div
+            className={`card text-center text-white bg-${statusBadgeColors[status]} shadow-sm`}
+          >
+            <div className="card-body">
+              <h6 className="card-title text-capitalize">{status}</h6>
+              <p className="card-text fs-3 fw-bold">
+                {statusCounts[status] || 0}
+              </p>
             </div>
-            
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Recent Applications */}
+    <h2 className="mb-3">Recent Applications</h2>
+    {jobs.length === 0 ? (
+      <p className="text-muted">You have no job applications yet.</p>
+    ) : (
+      <div className="list-group shadow-sm rounded">
+        {recentJobs.map((job) => (
+          <div
+            key={job._id}
+            className="list-group-item list-group-item-action flex-column align-items-start"
+          >
+            <div className="d-flex w-100 justify-content-between">
+              <h5 className="mb-1">{job.position}</h5>
+              <small className="text-muted">
+                {new Date(job.appliedDate).toLocaleDateString()}
+              </small>
+            </div>
+            <p className="mb-1">
+              {job.company} — {job.location || "Location not specified"}
+            </p>
+            <small>
+              Status:{" "}
+              <span
+                className={`badge bg-${statusBadgeColors[job.status]} text-capitalize`}
+              >
+                {job.status}
+              </span>
+            </small>
           </div>
         ))}
       </div>
+    )}
+  </div>
+);
 
-      <h2 className="mb-3">Recent Applications</h2>
-      {jobs.length === 0 ? (
-        <p>You have no job applications yet.</p>
-      ) : (
-        <div className="list-group">
-          {recentJobs.map(job => (// returning a multi-line JSX block
-            <div key={job._id} className="list-group-item list-group-item-action flex-column align-items-start">
-              <div className="d-flex w-100 justify-content-between">
-                <h5 className="mb-1">{job.position}</h5>
-                <small>{new Date(job.appliedDate).toLocaleDateString()}</small>
-              </div>
-              <p className="mb-1">{job.company} — {job.location || 'Location not specified'}</p>
-              <small>
-                Status: <span className={`badge bg-${statusBadgeColors[job.status]} text-capitalize`}>{job.status}</span>
-              </small>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-    </>
-  );
 }

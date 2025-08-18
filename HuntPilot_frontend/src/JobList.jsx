@@ -61,129 +61,133 @@ setJobs(res.data);
 
 return (
   <>
+    <div className="container my-4">
+      {/* 🔍 Filter Section */}
+      <div className="card shadow-sm mb-4 border-0">
+        <div className="card-body">
+          <form className="row g-3 align-items-end">
+            {/* Search */}
+            <div className="col-12 col-md-4">
+              <input
+                type="search"
+                className="form-control rounded-pill"
+                placeholder="Search jobs, companies, locations..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
 
-  <div className="container my-3">
-  <form className="row g-3 align-items-end">
-    {/* Search Field */}
-    <div className="col-12 col-md-4">
-      <label htmlFor="searchInput" className="form-label visually-hidden">Search</label>
-      <input
-        type="search"
-        id="searchInput"
-        className="form-control rounded-pill"
-        placeholder="Search jobs, companies, locations..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-      />
-    </div>
+            {/* Status */}
+            <div className="col-6 col-md-2">
+              <label className="form-label">Status</label>
+              <select
+                className="form-select rounded-pill"
+                value={status}
+                onChange={e => setStatus(e.target.value)}
+              >
+                <option value="all">All</option>
+                <option value="applied">Applied</option>
+                <option value="interviewing">Interviewing</option>
+                <option value="offer">Offer</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
 
-    {/* Status Dropdown */}
-    <div className="col-6 col-md-2">
-      <label htmlFor="statusFilter" className="form-label">Status</label>
-      <select
-        id="statusFilter"
-        className="form-select rounded-pill"
-        value={status}
-        onChange={e => setStatus(e.target.value)}
-      >
-        <option value="all">All</option>
-        <option value="applied">Applied</option>
-        <option value="interviewing">Interviewing</option>
-        <option value="offer">Offer</option>
-        <option value="rejected">Rejected</option>
-      </select>
-    </div>
+            {/* Date Range */}
+            <div className="col-6 col-md-2">
+              <label className="form-label">From</label>
+              <input
+                type="date"
+                className="form-control rounded-pill"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+              />
+            </div>
+            <div className="col-6 col-md-2">
+              <label className="form-label">To</label>
+              <input
+                type="date"
+                className="form-control rounded-pill"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+              />
+            </div>
 
-    {/* Start Date */}
-    <div className="col-6 col-md-2">
-      <label htmlFor="startDate" className="form-label">From</label>
-      <input
-        id="startDate"
-        type="date"
-        className="form-control rounded-pill"
-        value={startDate}
-        onChange={e => setStartDate(e.target.value)}
-      />
-    </div>
-
-    {/* End Date */}
-    <div className="col-6 col-md-2">
-      <label htmlFor="endDate" className="form-label">To</label>
-      <input
-        id="endDate"
-        type="date"
-        className="form-control rounded-pill"
-        value={endDate}
-        onChange={e => setEndDate(e.target.value)}
-      />
-    </div>
-
-    {/* Reset/Clear Button */}
-    <div className="col-6 col-md-2 d-flex align-items-end">
-      <button
-        type="button"
-        className="btn btn-outline-secondary w-100 rounded-pill"
-        onClick={() => {
-          setSearch("");
-          setStatus("all");
-          setStartDate("");
-          setEndDate("");
-        }}
-      >
-        Clear
-      </button>
-    </div>
-  </form>
-</div>
-
-  <div className="container my-4" style={{ maxWidth: '700px' }}>
-    <h2 className="mb-4 text-center">Your Job Applications</h2>
-    {errors && <p className="text-danger text-center">{errors}</p>}
-
-    {jobs.length === 0 ? (
-      <p className="text-center">No job applications found.</p>
-    ) : (
-      <ul className="list-group">
-{filteredJobs.map((job) => (
-  <div key={job._id} className="col-12">
-    <div className="card border-0 shadow-sm job-hover-transition">
-      <div className="card-body d-flex flex-column flex-md-row justify-content-between align-items-center">
-        <div>
-          <h5 className="card-title mb-1">
-            <span className="me-2"><i className="bi bi-briefcase"></i></span>
-            {job.position}
-          </h5>
-          <div className="text-muted mb-0" style={{ fontSize: '1rem' }}>
-            {job.company} •{' '}
-            <span className={`badge text-capitalize ${{
-              applied: 'bg-primary',
-              interviewing: 'bg-warning text-dark',
-              offer: 'bg-success',
-              rejected: 'bg-danger'
-            }[job.status] || 'bg-secondary'}`}>
-              {job.status}
-            </span>
-          </div>
-        </div>
-        <div className="text-end mt-3 mt-md-0">
-          <div className="small text-muted">
-            <i className="bi bi-calendar"></i>{' '}
-            {job.appliedDate ? new Date(job.appliedDate).toLocaleDateString() : ''}
-          </div>
-          <Link
-            to={`/jobs/${job._id}`}
-            className="btn btn-outline-secondary btn-sm mt-2"
-          >
-            View Details
-          </Link>
+            {/* Clear Button */}
+            <div className="col-6 col-md-2">
+              <button
+                type="button"
+                className="btn btn-outline-secondary w-100 rounded-pill"
+                onClick={() => {
+                  setSearch("");
+                  setStatus("all");
+                  setStartDate("");
+                  setEndDate("");
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </form>
         </div>
       </div>
+
+      {/* 📋 Job List */}
+      <div className="container" style={{ maxWidth: '700px' }}>
+        <h2 className="mb-4 text-center">Your Job Applications</h2>
+        {errors && <div className="alert alert-danger text-center">{errors}</div>}
+
+        {jobs.length === 0 ? (
+          <div className="alert alert-info text-center">
+            No job applications found.
+          </div>
+        ) : (
+          <div className="list-group">
+            {filteredJobs.map(job => (
+              <div
+                key={job._id}
+                className="list-group-item list-group-item-action border-0 shadow-sm mb-3 rounded"
+              >
+                <div className="d-flex justify-content-between align-items-center flex-wrap">
+                  {/* Job Info */}
+                  <div>
+                    <h5 className="mb-1">
+                      <i className="bi bi-briefcase me-2"></i>{job.position}
+                    </h5>
+                    <p className="mb-1 text-muted">
+                      {job.company} •{' '}
+                      <span className={`badge bg-${{
+                        applied: 'primary',
+                        interviewing: 'warning text-dark',
+                        offer: 'success',
+                        rejected: 'danger'
+                      }[job.status] || 'secondary'}`}>
+                        {job.status}
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Date + Action */}
+                  <div className="text-end">
+                    <small className="text-muted d-block mb-2">
+                      <i className="bi bi-calendar me-1"></i>
+                      {job.appliedDate ? new Date(job.appliedDate).toLocaleDateString() : ''}
+                    </small>
+                    <Link
+                      to={`/jobs/${job._id}`}
+                      className="btn btn-outline-primary btn-sm rounded-pill"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-))}
-      </ul>
-    )}
-  </div>
   </>
 );
+
 };

@@ -84,88 +84,92 @@ export default function ProfileResumeUpload(){
   };
 
   return (
-    <div className="card mb-4 shadow-sm">
-      <div className="card-body">
-        {resumeFilename ? (
-          <>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <h5 className="card-title mb-1">Uploaded Resume</h5>
-                <p className="mb-0 text-truncate" style={{ maxWidth: '70%' }}>
-                  {resumeFilename}
-                </p>
-              </div>             
-              <div>
-                  <button
-                  className="btn btn-outline-primary btn-sm me-2"
-                  onClick={handleDownload}
-                >
-                  View Resume
-                </button>
-                <button
-                  className="btn btn-outline-secondary btn-sm me-2"
-                  onClick={() => setShowUpload(!showUpload)}
-                >
-                  {showUpload ? 'Cancel' : 'Update'}
-                </button>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
+  <div className="card mb-4 shadow-sm border-0 rounded-3">
+    <div className="card-body">
+      {resumeFilename ? (
+        <>
+          {/* Resume Info + Action Buttons */}
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+            <div className="mb-2 mb-md-0">
+              <h5 className="card-title mb-1">Uploaded Resume</h5>
+              <p className="mb-0 text-muted text-truncate" style={{ maxWidth: "250px" }}>
+                {resumeFilename}
+              </p>
             </div>
-          </>
-        ) : (
-          <div className="text-center mb-3">
-            <p className="text-muted">No resume uploaded yet.</p>
+            <div className="d-flex flex-wrap gap-2">
+              <button
+                className="btn btn-outline-primary btn-sm"
+                onClick={handleDownload}
+              >
+                View Resume
+              </button>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => setShowUpload(!showUpload)}
+              >
+                {showUpload ? "Cancel" : "Update"}
+              </button>
+              <button
+                className="btn btn-danger btn-sm"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="text-center mb-3">
+          <p className="text-muted">No resume uploaded yet.</p>
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowUpload(true)}
+          >
+            Upload Resume
+          </button>
+        </div>
+      )}
+
+      {/* Upload Form */}
+      {showUpload && (
+        <form onSubmit={handleSubmit} className="bg-light p-3 rounded">
+          <div className="mb-3">
+            <input
+              type="file"
+              accept=".txt"
+              className="form-control"
+              onChange={(e) => setFile(e.target.files[0])}
+            />
+          </div>
+          <div className="d-flex flex-wrap gap-2">
             <button
-              className="btn btn-primary"
-              onClick={() => setShowUpload(true)}
+              type="submit"
+              className="btn btn-success"
+              disabled={!file}
             >
-              Upload Resume
+              Upload
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={() => {
+                setShowUpload(false);
+                setFile(null);
+              }}
+            >
+              Cancel
             </button>
           </div>
-        )}
+        </form>
+      )}
 
-        {showUpload && (
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <input
-                type="file"
-                accept=".txt"
-                className="form-control"
-                onChange={(e) => setFile(e.target.files[0])}
-              />
-            </div>
-            <div className="d-flex">
-              <button
-                type="submit"
-                className="btn btn-success me-2"
-                disabled={!file}
-              >
-                Upload
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => {
-                  setShowUpload(false);
-                  setFile(null);
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        )}
-
-        {message && (
-          <div className="alert alert-info mt-3 mb-0">{message}</div>
-        )}
-      </div>
+      {/* Feedback Message */}
+      {message && (
+        <div className="alert alert-info mt-3 mb-0 text-center">{message}</div>
+      )}
     </div>
-  );
+  </div>
+);
+
 
 }

@@ -29,66 +29,90 @@ setMessage("signup failed:"+ (err.response.data.msg? err.response.data.msg : "se
 };
 
 return (
-    <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-light">
-      <div className="card shadow p-4" style={{ minWidth: "350px", maxWidth: "400px" }}>
-        <h2 className="mb-4 text-center">Sign Up</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-        <label htmlFor="name" className="form-label">Name<span className="text-danger">*</span></label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          className="form-control"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Full Name"
-          required
-        />
-      </div>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email Address
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              autoComplete="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              placeholder="Enter your email"
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              name="password"
-              autoComplete="new-password"
-              value={form.password}
-              onChange={handleChange}
-              required
-              placeholder="Create a password"
-            />
-          </div>
-          <button type="submit" className="btn btn-success w-100">
-            Register
-          </button>
-           <div>{message}</div>
-        </form>
-        <div className="text-center mt-3">
-          <small>
-            Already have an account? <NavLink to="/">Log in</NavLink>
-          </small>
+  <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <div className="card shadow p-4 w-100" style={{ maxWidth: "420px" }}>
+      {/* Title */}
+      <h2 className="mb-4 text-center fw-bold text-success">Sign Up</h2>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit}>
+        {/* Name */}
+        <div className="mb-3">
+          <label htmlFor="name" className="form-label">
+            Name <span className="text-danger">*</span>
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            className="form-control"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Full Name"
+            required
+          />
         </div>
+
+        {/* Email */}
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">
+            Email Address
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            name="email"
+            autoComplete="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            placeholder="Enter your email"
+          />
+        </div>
+
+        {/* Password */}
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">
+            Password
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            name="password"
+            autoComplete="new-password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            placeholder="Create a password"
+          />
+        </div>
+
+        {/* Register Button */}
+        <button type="submit" className="btn btn-success w-100">
+          Register
+        </button>
+
+        {/* Message */}
+        {message && (
+          <div className="alert alert-info mt-3 text-center p-2">
+            {message}
+          </div>
+        )}
+      </form>
+
+      {/* Redirect */}
+      <div className="text-center mt-3">
+        <small>
+          Already have an account?{" "}
+          <NavLink to="/login" className="text-decoration-none">
+            Log in
+          </NavLink>
+        </small>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
