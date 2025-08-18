@@ -42,7 +42,7 @@ useEffect(() => {
     setLoadingKeywords(true);//we are now starting to extract keywords
     setKeywordError('');
     try {
-      const resp = await fetch('/api/analysis/extract', {
+      const resp = await fetch('https://aipowered-jobtracker-1.onrender.com/extract-keywords', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
