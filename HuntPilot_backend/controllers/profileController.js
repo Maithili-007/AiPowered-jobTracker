@@ -25,6 +25,7 @@ let text;
 const {data} =  await axios.post('https://aipowered-jobtracker-1.onrender.com/extract-keywords',{description:text});
 
 // Remove old resume if exists
+const oldUser = await User.findById(userId);
     if (oldUser.resumePath) {
   try {
     await fsPromises.unlink(oldUser.resumePath);
