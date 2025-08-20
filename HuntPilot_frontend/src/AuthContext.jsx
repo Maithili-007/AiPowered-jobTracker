@@ -1,21 +1,11 @@
 import React, {children, createContext, useState, useEffect  } from "react";
 const AuthContext = createContext();//creates a new context object/box to hold values
 export const AuthProvider = ({children})=>{
-// const [user,setUser] = useState(localStorage.getItem("user")
-//       ? JSON.parse(localStorage.getItem("user"))
-//       : null);
-// const [token,setToken] = useState(localStorage.getItem("token")|| "");
-
-  const [token, setToken] = useState("");
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+  const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
-
-    if (storedToken) setToken(storedToken);
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
 const login= ({token,user}) =>{//data sent by backend
 setUser(user);

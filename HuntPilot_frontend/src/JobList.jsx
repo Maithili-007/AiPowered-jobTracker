@@ -15,7 +15,7 @@ const [endDate, setEndDate] = useState("");
 
 useEffect(()=>{
 if(!token){
-  return
+  return;
 }
 axios.get('https://aipowered-jobtracker.onrender.com/api/jobs',{headers:{Authorization:`Bearer ${token}`}})
 .then((res)=>{
