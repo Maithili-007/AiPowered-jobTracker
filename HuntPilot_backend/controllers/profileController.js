@@ -2,13 +2,13 @@ const User = require('../models/User');
 const fs = require('fs');
 const axios = require('axios');
 const pdfParse = require('pdf-parse');
+const fsPromises = fs.promises;
 
 exports.uploadResume = async (req,res,next)=>{
 try{
 const userId = req.user.id;
 const { path: filePath, mimetype, originalname } = req.file;
 const dataBuffer = fs.readFileSync(filePath);
-const parsed = await pdfParse(dataBuffer);
 let text;
     if (mimetype === 'application/pdf') {
       // PDF: use pdf-parse
@@ -23,6 +23,15 @@ let text;
     }
 
 const {data} =  await axios.post('https://aipowered-jobtracker-1.onrender.com/extract-keywords',{description:text});
+
+// Remove old resume if exists
+    if (oldUser.resumePath) {
+  try {
+    await fsPromises.unlink(oldUser.resumePath);
+  } catch (err) {
+    if (err.code !== 'ENOENT') console.error("Error deleting old resume:", err);
+  }
+}
 
 await User.findByIdAndUpdate(userId,{
   resumeKeywords:data.keywords,
@@ -54,10 +63,21 @@ catch (error) {
 exports.deleteResume = async (req, res) => {
   try{
     const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    if (user.resumePath) {
+  try {
+    await fsPromises.unlink(user.resumePath);
+  } catch (err) {
+    if (err.code !== 'ENOENT') console.error("Error deleting file:", err);
+  }
+}
+
     await User.findByIdAndUpdate(userId,{
       $unset: {
         resumeKeywords: '',
         resumeFilename: '',
+        resumePath: '',
       },
     });
     res.json({ message: 'Resume deleted successfully' });
