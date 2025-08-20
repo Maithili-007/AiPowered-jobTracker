@@ -40,7 +40,8 @@ export default function ProfileResumeUpload(){
         },
       });
       setMessage(res.data.message);
-      setResumeFilename(file.name);
+      //setResumeFilename(file.name);
+      setResumeFilename(res.data.resumeFilename); 
       setFile(null);
       setShowUpload(false);
     } catch {
@@ -136,7 +137,7 @@ export default function ProfileResumeUpload(){
           <div className="mb-3">
             <input
               type="file"
-              accept=".txt"
+              accept=".pdf,.txt"
               className="form-control"
               onChange={(e) => setFile(e.target.files[0])}
             />
