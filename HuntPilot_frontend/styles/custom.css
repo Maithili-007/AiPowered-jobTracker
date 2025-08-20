@@ -241,3 +241,16 @@
   background-color: #bcaaa4;
   color: #3e2723;
 }
+
+/* Brown checkboxes */
+.form-check-input {
+  accent-color: #6f4e37; /* coffee brown */
+  border: 2px solid #6f4e37 !important;
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: #6f4e37 !important;
+  border-color: #6f4e37 !important;
+}
+

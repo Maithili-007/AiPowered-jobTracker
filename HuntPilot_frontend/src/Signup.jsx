@@ -28,8 +28,8 @@ setMessage("signup failed:"+ (err.response.data.msg? err.response.data.msg : "se
 }
 };
 return (
-  <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-cream">
-    <div className="card shadow p-4 w-100" style={{ maxWidth: "420px" }}>
+  <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-white">
+    <div className="p-4 w-100" style={{ maxWidth: "420px" }}>
       {/* Title */}
       <h2 className="mb-4 text-center fw-bold text-coffee">Sign Up</h2>
 

@@ -25,8 +25,8 @@ export default function Login() {
     }
   };
 return (
-  <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-cream">
-    <div className="card shadow p-4 w-100" style={{ maxWidth: "420px" }}>
+  <div className="container d-flex align-items-center justify-content-center min-vh-100">
+    <div className="p-4 w-100" style={{ maxWidth: "420px" }}>
       {/* Title */}
       <h2 className="mb-4 text-center fw-bold text-coffee">Sign In</h2>
 

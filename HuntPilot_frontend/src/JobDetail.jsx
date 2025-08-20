@@ -161,7 +161,7 @@ return (
                   </div>
                 ) : (
                   <div className="card border-coffee mb-4 shadow-sm rounded-3">
-                    <div className="card-header bg-caramel text-dark fw-bold">
+                    <div className="card-header bg-dust text-dark fw-bold">
                       Profile Match Score
                     </div>
                     <div className="card-body">
@@ -193,7 +193,7 @@ return (
                           matchResult.matched.map((kw, i) => (
                             <span
                               key={i}
-                              className="badge bg-mocha text-dark me-1 mb-1"
+                              className="badge bg-mocha border-coffee text-dark me-1 mb-1"
                             >
                               {kw}
                             </span>
@@ -210,7 +210,7 @@ return (
                           matchResult.missing.map((kw, i) => (
                             <span
                               key={i}
-                              className="badge bg-latte text-dark me-1 mb-1"
+                              className="badge bg-soft-white border-coffee text-dark me-1 mb-1"
                             >
                               {kw}
                             </span>
