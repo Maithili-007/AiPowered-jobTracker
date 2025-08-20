@@ -27,25 +27,24 @@ setMessage("signup failed:"+ (err.response.data.msg? err.response.data.msg : "se
 }
 }
 };
-
 return (
-  <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-light">
+  <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-cream">
     <div className="card shadow p-4 w-100" style={{ maxWidth: "420px" }}>
       {/* Title */}
-      <h2 className="mb-4 text-center fw-bold text-success">Sign Up</h2>
+      <h2 className="mb-4 text-center fw-bold text-coffee">Sign Up</h2>
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
         {/* Name */}
         <div className="mb-3">
-          <label htmlFor="name" className="form-label">
-            Name <span className="text-danger">*</span>
+          <label htmlFor="name" className="form-label text-brown-dark">
+            Name <span className="text-brown-dark">*</span>
           </label>
           <input
             id="name"
             name="name"
             type="text"
-            className="form-control"
+            className="form-control border-coffee"
             value={form.name}
             onChange={handleChange}
             placeholder="Full Name"
@@ -55,12 +54,12 @@ return (
 
         {/* Email */}
         <div className="mb-3">
-          <label htmlFor="email" className="form-label">
+          <label htmlFor="email" className="form-label text-brown-dark">
             Email Address
           </label>
           <input
             type="email"
-            className="form-control"
+            className="form-control border-coffee"
             id="email"
             name="email"
             autoComplete="email"
@@ -73,12 +72,12 @@ return (
 
         {/* Password */}
         <div className="mb-3">
-          <label htmlFor="password" className="form-label">
+          <label htmlFor="password" className="form-label text-brown-dark">
             Password
           </label>
           <input
             type="password"
-            className="form-control"
+            className="form-control border-coffee"
             id="password"
             name="password"
             autoComplete="new-password"
@@ -90,13 +89,13 @@ return (
         </div>
 
         {/* Register Button */}
-        <button type="submit" className="btn btn-success w-100">
+        <button type="submit" className="btn btn-coffee w-100">
           Register
         </button>
 
         {/* Message */}
         {message && (
-          <div className="alert alert-info mt-3 text-center p-2">
+          <div className="alert bg-sand mt-3 text-center p-2 border-coffee text-brown-dark">
             {message}
           </div>
         )}
@@ -104,9 +103,9 @@ return (
 
       {/* Redirect */}
       <div className="text-center mt-3">
-        <small>
+        <small className="text-brown-dark">
           Already have an account?{" "}
-          <NavLink to="/login" className="text-decoration-none">
+          <NavLink to="/login" className="text-coffee text-decoration-none fw-semibold">
             Log in
           </NavLink>
         </small>

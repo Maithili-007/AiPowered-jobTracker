@@ -24,22 +24,22 @@ export default function Login() {
       }
     }
   };
-  return (
-  <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-light">
+return (
+  <div className="container d-flex align-items-center justify-content-center min-vh-100 bg-cream">
     <div className="card shadow p-4 w-100" style={{ maxWidth: "420px" }}>
       {/* Title */}
-      <h2 className="mb-4 text-center fw-bold text-primary">Sign In</h2>
+      <h2 className="mb-4 text-center fw-bold text-coffee">Sign In</h2>
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
         {/* Email */}
         <div className="mb-3">
-          <label htmlFor="email" className="form-label">
+          <label htmlFor="email" className="form-label text-brown-dark">
             Email Address
           </label>
           <input
             type="email"
-            className="form-control"
+            className="form-control border-coffee"
             id="email"
             name="email"
             autoComplete="email"
@@ -52,12 +52,12 @@ export default function Login() {
 
         {/* Password */}
         <div className="mb-3">
-          <label htmlFor="password" className="form-label">
+          <label htmlFor="password" className="form-label text-brown-dark">
             Password
           </label>
           <input
             type="password"
-            className="form-control"
+            className="form-control border-coffee"
             id="password"
             name="password"
             autoComplete="current-password"
@@ -69,13 +69,13 @@ export default function Login() {
         </div>
 
         {/* Login Button */}
-        <button type="submit" className="btn btn-primary w-100">
+        <button type="submit" className="btn btn-coffee w-100">
           Log In
         </button>
 
         {/* Message */}
         {message && (
-          <div className="alert alert-info mt-3 text-center p-2">
+          <div className="alert bg-sand mt-3 text-center p-2 border-coffee text-brown-dark">
             {message}
           </div>
         )}
@@ -83,9 +83,12 @@ export default function Login() {
 
       {/* Redirect */}
       <div className="text-center mt-3">
-        <small>
+        <small className="text-brown-dark">
           Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-decoration-none">
+          <Link
+            to="/signup"
+            className="text-coffee text-decoration-none fw-semibold"
+          >
             Register here
           </Link>
         </small>
@@ -93,6 +96,5 @@ export default function Login() {
     </div>
   </div>
 );
-
 }
 
