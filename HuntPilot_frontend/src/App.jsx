@@ -1,6 +1,6 @@
 import React, { Children } from "react";
 import { useContext } from "react";
-import { BrowserRouter, Routes, Route,Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route,Navigate,useLocation } from "react-router-dom";
 import { AuthProvider } from "./AuthContext";
 import AuthContext from "./AuthContext";
 import Signup from "./Signup";
@@ -29,16 +29,19 @@ const RootRedirect = () => {
   return token ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
 };
 
-export default function App(){
-return (
-  <AuthProvider>
-    <BrowserRouter>
-      {/* Navbar only when NOT on login/signup */}
-      {window.location.pathname !== "/login" && window.location.pathname !== "/signup" && (
-        <Navbar />
-      )}
+function AppContent() {
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
 
-      <div className="container-fluid p-3">
+  return (
+    <>
+    <div className="app-wrapper bg-light-brown min-vh-100 d-flex flex-column">
+    {/* Navbar (conditionally visible) */}
+    {!hideNavbar && <Navbar />}
+
+    {/* Main content */}
+    <main className="flex-grow-1 py-4 px-3">
+      <div className="container bg-white-custom rounded-4 shadow-sm p-4">
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />
@@ -49,9 +52,19 @@ return (
           <Route path="/add-job" element={<ProtectedRoute><AddJob /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
-      </div>
-    </BrowserRouter>
-  </AuthProvider>
-);
+        </div>
+    </main>
+  </div>
+    </>
+  );
+}
 
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }

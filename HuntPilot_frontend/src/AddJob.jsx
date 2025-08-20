@@ -101,17 +101,17 @@ return (
         <div className="col-12 col-md-10 col-lg-8">
           <form
             onSubmit={handleSubmit}
-            className="p-4 border rounded shadow-sm bg-white"
+            className="p-4 border rounded shadow-sm bg-dust"
           >
             {/* Header */}
-            <h4 className="mb-4 text-center">
+            <h4 className="mb-4 text-center text-coffee fw-bold">
               {initialData ? "Edit Job" : "Add Job"}
             </h4>
 
             {/* Position */}
             <div className="mb-3">
-              <label htmlFor="position" className="form-label">
-                Position <span className="text-danger">*</span>
+              <label htmlFor="position" className="form-label fw-semibold text-coffee">
+                Position <span className="text-caramel">*</span>
               </label>
               <input
                 id="position"
@@ -121,14 +121,14 @@ return (
                 onChange={handleChange}
                 placeholder="Enter position"
                 required
-                className="form-control"
+                className="form-control border-coffee"
               />
             </div>
 
             {/* Company */}
             <div className="mb-3">
-              <label htmlFor="company" className="form-label">
-                Company <span className="text-danger">*</span>
+              <label htmlFor="company" className="form-label fw-semibold text-coffee">
+                Company <span className="text-caramel">*</span>
               </label>
               <input
                 id="company"
@@ -138,14 +138,14 @@ return (
                 onChange={handleChange}
                 placeholder="Enter company name"
                 required
-                className="form-control"
+                className="form-control border-coffee"
               />
             </div>
 
             {/* Status + Location in one row on desktop */}
             <div className="row">
               <div className="col-12 col-md-6 mb-3">
-                <label htmlFor="status" className="form-label">
+                <label htmlFor="status" className="form-label fw-semibold text-coffee">
                   Status
                 </label>
                 <select
@@ -153,7 +153,7 @@ return (
                   name="status"
                   value={form.status}
                   onChange={handleChange}
-                  className="form-select"
+                  className="form-select border-coffee"
                   aria-label="Job application status"
                 >
                   <option value="applied">Applied</option>
@@ -164,7 +164,7 @@ return (
               </div>
 
               <div className="col-12 col-md-6 mb-3">
-                <label htmlFor="location" className="form-label">
+                <label htmlFor="location" className="form-label fw-semibold text-coffee">
                   Location
                 </label>
                 <input
@@ -174,14 +174,14 @@ return (
                   value={form.location}
                   onChange={handleChange}
                   placeholder="Enter location"
-                  className="form-control"
+                  className="form-control border-coffee"
                 />
               </div>
             </div>
 
             {/* Notes */}
             <div className="mb-4">
-              <label htmlFor="notes" className="form-label">
+              <label htmlFor="notes" className="form-label fw-semibold text-coffee">
                 Notes
               </label>
               <textarea
@@ -190,26 +190,26 @@ return (
                 value={form.notes}
                 onChange={handleChange}
                 placeholder="Add any notes..."
-                className="form-control"
+                className="form-control border-coffee"
                 rows="3"
               />
             </div>
 
             {/* Job Description & Keywords */}
-            <div className="card mb-4">
-              <div className="card-header bg-light">
-                <h5 className="mb-0">Job Description & Keywords</h5>
+            <div className="card mb-4 border-coffee">
+              <div className="card-header bg-caramel text-dark fw-bold">
+                Job Description & Keywords
               </div>
               <div className="card-body">
                 {/* Job Description */}
                 <div className="mb-3">
-                  <label htmlFor="description" className="form-label">
+                  <label htmlFor="description" className="form-label fw-semibold text-coffee">
                     Job Description
                   </label>
                   <textarea
                     id="description"
                     name="description"
-                    className="form-control"
+                    className="form-control border-coffee"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Paste job description here"
@@ -220,12 +220,12 @@ return (
 
                 {/* Suggested Keywords */}
                 <div className="mb-3">
-                  <label className="form-label">Suggested Keywords</label>
+                  <label className="form-label fw-semibold text-coffee">Suggested Keywords</label>
                   {loadingKeywords && (
-                    <div className="text-info">Extracting keywords…</div>
+                    <div className="text-mocha">Extracting keywords…</div>
                   )}
                   {keywordError && (
-                    <div className="text-danger">{keywordError}</div>
+                    <div className="text-caramel">{keywordError}</div>
                   )}
 
                   <div className="d-flex flex-wrap">
@@ -235,7 +235,7 @@ return (
                           <input
                             type="checkbox"
                             id={`kw-${i}`}
-                            className="form-check-input"
+                            className="form-check-input border-coffee"
                             checked={selectedKeywords.includes(kw)}
                             onChange={() => {
                               setSelectedKeywords((prev) =>
@@ -249,7 +249,7 @@ return (
                             htmlFor={`kw-${i}`}
                             className="form-check-label"
                           >
-                            <span className="badge bg-secondary">{kw}</span>
+                            <span className="badge bg-mocha text-dark">{kw}</span>
                           </label>
                         </div>
                       ))}
@@ -264,19 +264,19 @@ return (
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="btn btn-outline-secondary"
+                  className="btn btn-outline-coffee"
                 >
                   Cancel
                 </button>
               )}
-              <button type="submit" className="btn btn-primary ms-auto">
+              <button type="submit" className="btn btn-coffee ms-auto">
                 {initialData ? "Update Job" : "Add Job"}
               </button>
             </div>
 
             {/* Success Message */}
             {message && (
-              <p className="mt-3 text-center text-success">{message}</p>
+              <p className="mt-3 text-center text-mocha">{message}</p>
             )}
           </form>
         </div>
@@ -284,7 +284,6 @@ return (
     </div>
   </>
 );
-
 
 }
 

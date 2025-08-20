@@ -1,0 +1,243 @@
+/* ===================== BASE COLORS ===================== */
+:root {
+  --brown: #6f4e37;
+  --brown-light: #d7ccc8;
+  --brown-dark: #3e2723;
+  --beige: #f5f0e6;
+  --sand: #efebe9;
+  --latte: #b08d57;
+  --caramel: #d7a46a;
+  --dust: #c7b198;
+  --cream: #fdf6f0;
+  --soft-white: #fffdf9;
+  --ice: #fefcfb;
+}
+
+/* ===================== BACKGROUNDS ===================== */
+.bg-soft-brown {
+  background-color: var(--brown-light) !important;
+  color: var(--brown-dark) !important;
+}
+
+.bg-coffee {
+  background-color: var(--brown) !important;
+  color: #fff !important;
+}
+
+.bg-accent-brown {
+  background-color: #82594d !important; /* darker coffee accent */
+  color: #fff !important;
+}
+
+.bg-sand {
+  background-color: var(--sand) !important;
+  color: var(--brown-dark) !important;
+}
+
+.bg-espresso {
+  background-color: var(--brown-dark) !important;
+  color: #fff !important;
+}
+
+.bg-light-brown {
+  background-color: var(--cream) !important;
+}
+
+.bg-white-custom {
+  background-color: var(--soft-white) !important;
+}
+
+.bg-cream {
+  background-color: var(--cream) !important;
+}
+
+.bg-ice {
+  background-color: var(--ice) !important;
+}
+
+/* Extra palette */
+.bg-latte {
+  background-color: var(--latte) !important;
+  color: #fff !important;
+}
+
+.bg-caramel {
+  background-color: var(--caramel) !important;
+  color: #fff !important;
+}
+
+.bg-dust {
+  background-color: var(--dust) !important;
+  color: #fff !important;
+}
+
+/* ===================== TEXT ===================== */
+.text-coffee {
+  color: var(--brown) !important;
+}
+
+.text-brown-dark {
+  color: var(--brown-dark) !important;
+}
+
+.text-brown {
+  color: var(--brown) !important;
+}
+
+.text-primary {
+  color: #6d4c41 !important; /* coffee */
+}
+
+.text-secondary {
+  color: #8d6e63 !important; /* warm brown */
+}
+
+.text-dark {
+  color: var(--brown-dark) !important;
+}
+
+.text-muted {
+  color: #a1887f !important; /* muted mocha */
+}
+
+/* ===================== BORDERS ===================== */
+.border-coffee {
+  border: 1px solid var(--brown) !important;
+}
+
+/* ===================== BUTTONS ===================== */
+.btn-coffee {
+  background-color: var(--brown) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn-coffee:hover {
+  background-color: #5a3f2c !important;
+  color: #fff !important;
+}
+
+.btn-primary {
+  background-color: #8d6e63 !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover {
+  background-color: #6d4c41 !important;
+}
+
+.btn-outline-primary {
+  border: 2px solid #8d6e63 !important;
+  color: #8d6e63 !important;
+  background: transparent !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: #8d6e63 !important;
+  color: #fff !important;
+}
+
+.btn-outline-coffee {
+  border: 1px solid var(--brown) !important;
+  color: var(--brown) !important;
+  background: transparent !important;
+}
+
+.btn-outline-coffee:hover {
+  background-color: var(--brown) !important;
+  color: #fff !important;
+}
+
+/* ===================== CARDS & SECTIONS ===================== */
+.card {
+  border-radius: 0.75rem !important;
+  background-color: #fff8f0 !important; /* soft beige */
+  border: 1px solid #e0cfc2 !important;
+}
+
+.section {
+  background-color: var(--beige) !important;
+  padding: 2rem 1rem;
+  border-radius: 1rem;
+}
+
+/* ===================== BADGES ===================== */
+.badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5em 0.75em;
+}
+
+.bg-applied {
+  background-color: var(--brown-light) !important;
+  color: var(--brown-dark) !important;
+}
+
+.bg-interviewing {
+  background-color: #a1887f !important;
+  color: #fff !important;
+}
+
+.bg-offer {
+  background-color: #8d6e63 !important;
+  color: #fff !important;
+}
+
+.bg-rejected {
+  background-color: var(--beige) !important;
+  color: var(--brown-dark) !important;
+}
+
+/* ===================== NAVBAR ===================== */
+.navbar {
+  background-color: #705045 !important;
+}
+
+.navbar-brand,
+.nav-link {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: var(--brown-light) !important;
+}
+/* Solid Brown Buttons */
+.btn-brown {
+  background-color: #8d6e63; /* warm brown */
+  color: #fff;
+  border: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-brown:hover {
+  background-color: #6d4c41; /* darker brown */
+  color: #fff;
+}
+
+/* Lighter Brown Outline Buttons */
+.btn-brown-outline {
+  background-color: transparent;
+  color: #8d6e63;
+  border: 1px solid #8d6e63;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-brown-outline:hover {
+  background-color: #8d6e63;
+  color: #fff;
+}
+
+/* Subtle Variant for Secondary Actions */
+.btn-brown-light {
+  background-color: #d7ccc8; /* light beige brown */
+  color: #4e342e;
+  border: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-brown-light:hover {
+  background-color: #bcaaa4;
+  color: #3e2723;
+}

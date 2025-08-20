@@ -12,64 +12,69 @@ export default function Navbar() {
   };
 
 return (
-  <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
-    <div className="container">
-      {/* Brand */}
-      <Link className="navbar-brand fw-bold" to="/dashboard">
-        HuntPilot
-      </Link>
+  <nav className="navbar navbar-expand-lg shadow-sm sticky-top bg-coffee">
+  <div className="container">
+    {/* Brand */}
+    <Link className="navbar-brand fw-bold text-white" to="/dashboard">
+      HuntPilot
+    </Link>
 
-      {/* Mobile Toggle Button */}
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
+    {/* Toggle button */}
+    <button
+      className="navbar-toggler border-0"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span className="navbar-toggler-icon"></span>
+    </button>
 
-      {/* Collapsible Menu */}
-      <div className="collapse navbar-collapse" id="navbarNav">
-        {/* Left side nav links */}
-        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-          <li className="nav-item">
-            <Link className="nav-link" to="/dashboard">Dashboard</Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/jobs">Jobs</Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/add-job">Add Job</Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/profile">Profile</Link>
-          </li>
-        </ul>
+    {/* Collapsible Menu */}
+    <div className="collapse navbar-collapse" id="navbarNav">
+      <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+        <li className="nav-item">
+          <Link className="nav-link text-white" to="/dashboard">
+            Dashboard
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link text-white" to="/jobs">
+            Jobs
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link text-white" to="/add-job">
+            Add Job
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link text-white" to="/profile">
+            Profile
+          </Link>
+        </li>
+      </ul>
 
-        {/* Right side user info + logout */}
-        <ul className="navbar-nav ms-auto align-items-lg-center">
-          <li className="nav-item d-lg-flex align-items-center me-2">
-            <span className="navbar-text text-white small">
-              Signed in as <strong>{user?.name || "Guest"}</strong>
-            </span>
-          </li>
-          <li className="nav-item">
-            <button 
-              className="btn btn-outline-light btn-sm w-100 w-lg-auto" 
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          </li>
-        </ul>
-      </div>
+      {/* Right side */}
+      <ul className="navbar-nav ms-auto align-items-lg-center">
+        <li className="nav-item me-2">
+          <span className="navbar-text text-white small">
+            Signed in as <strong>{user?.name || "Guest"}</strong>
+          </span>
+        </li>
+        <li className="nav-item">
+          <button
+            className="btn btn-light btn-sm"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
 );
-
-
 }
