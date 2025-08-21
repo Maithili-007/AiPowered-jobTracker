@@ -96,7 +96,7 @@ return (
               <small>
                 Status:{' '}
                 <span
-                  className={`badge bg-soft-brown text-capitalize text-dark px-3 py-2 rounded-pill`}
+                  className={`badge bg-caramel text-capitalize text-dark px-3 py-2 rounded-pill`}
                 >
                   {job.status}
                 </span>

@@ -102,13 +102,13 @@ export default function ProfileResumeUpload(){
             </div>
             <div className="d-flex flex-wrap gap-2">
               <button
-                className="btn btn-brown-outline btn-sm"
+                className="btn btn-brown btn-sm"
                 onClick={handleDownload}
               >
                 View Resume
               </button>
               <button
-                className="btn btn-brown-light btn-sm"
+                className="btn btn-brown btn-sm"
                 onClick={() => setShowUpload(!showUpload)}
               >
                 {showUpload ? "Cancel" : "Update"}
@@ -126,7 +126,7 @@ export default function ProfileResumeUpload(){
         <div className="text-center mb-3">
           <p className="text-muted">No resume uploaded yet.</p>
           <button
-            className="btn btn-brown"
+            className="btn btn-brown btn-sm"
             onClick={() => setShowUpload(true)}
           >
             Upload Resume
@@ -148,14 +148,14 @@ export default function ProfileResumeUpload(){
           <div className="d-flex flex-wrap gap-2">
             <button
               type="submit"
-              className="btn btn-brown"
+              className="btn btn-brown btn-sm"
               disabled={!file}
             >
               Upload
             </button>
             <button
               type="button"
-              className="btn btn-brown-outline-light"
+              className="btn btn-brown btn-sm"
               onClick={() => {
                 setShowUpload(false);
                 setFile(null);

@@ -123,10 +123,10 @@ return (
               <div className="col-12 col-md-6 mb-2">
                 <strong>Status:</strong>{" "}
                 <span className={`badge bg-${{
-                  applied: "coffee",
-                  interviewing: "mocha",
+                  applied: "caramel",
+                  interviewing: "caramel",
                   offer: "caramel",
-                  rejected: "latte"
+                  rejected: "caramel"
                 }[job.status] || "secondary"} text-dark px-3 py-2 rounded-pill`}>
                   {job.status}
                 </span>
@@ -161,7 +161,7 @@ return (
                   </div>
                 ) : (
                   <div className="card border-coffee mb-4 shadow-sm rounded-3">
-                    <div className="card-header bg-dust text-dark fw-bold">
+                    <div className="card-header bg-coffee text-light fw-bold">
                       Profile Match Score
                     </div>
                     <div className="card-body">

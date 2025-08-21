@@ -41,7 +41,7 @@ function AppContent() {
 
     {/* Main content */}
     <main className="flex-grow-1 py-4 px-3">
-      <div className="container bg-white-custom rounded-4 shadow-sm p-4">
+      <div className="container p-4">
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />

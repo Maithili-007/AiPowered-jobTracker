@@ -159,9 +159,9 @@ return (
                     <span
                       className={`badge px-3 py-2 rounded-pill bg-${{
                         applied: 'coffee',
-                        interviewing: 'latte',
-                        offer: 'caramel',
-                        rejected: 'dust'
+                        interviewing: 'coffee',
+                        offer: 'coffee',
+                        rejected: 'coffee'
                       }[job.status] || 'secondary'}`}
                     >
                       {job.status}

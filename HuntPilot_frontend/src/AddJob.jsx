@@ -101,10 +101,10 @@ return (
         <div className="col-12 col-md-10 col-lg-8">
           <form
             onSubmit={handleSubmit}
-            className="p-4 border rounded shadow-sm bg-soft-brown"
+            className="p-4 border rounded shadow-sm bg-light-brown"
           >
             {/* Header */}
-            <h4 className="mb-4 text-center text-coffee fw-bold">
+            <h4 className="mb-4 text-center text-brown-dark fw-bold">
               {initialData ? "Edit Job" : "Add Job"}
             </h4>
 
@@ -197,7 +197,7 @@ return (
 
             {/* Job Description & Keywords */}
             <div className="card mb-4 border-coffee">
-              <div className="card-header bg-dust text-dark fw-bold">
+              <div className="card-header bg-coffee text-light fw-bold">
                 Job Description & Keywords
               </div>
               <div className="card-body">
