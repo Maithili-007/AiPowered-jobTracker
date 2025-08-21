@@ -154,14 +154,14 @@ return (
                   <h5 className="mb-1 text-brown-dark fw-semibold">
                     <i className="bi bi-briefcase me-2"></i>{job.position}
                   </h5>
-                  <p className="mb-1 text-muted">
+                  <p className="mb-1 text-black">
                     {job.company} •{' '}
                     <span
                       className={`badge px-3 py-2 rounded-pill bg-${{
-                        applied: 'coffee',
-                        interviewing: 'coffee',
-                        offer: 'coffee',
-                        rejected: 'coffee'
+                        applied: 'caramel',
+                        interviewing: 'caramel',
+                        offer: 'caramel',
+                        rejected: 'caramel'
                       }[job.status] || 'secondary'}`}
                     >
                       {job.status}
@@ -171,7 +171,7 @@ return (
 
                 {/* Date + Action */}
                 <div className="text-end">
-                  <small className="text-muted d-block mb-2">
+                  <small className="text-black d-block mb-2">
                     <i className="bi bi-calendar me-1"></i>
                     {job.appliedDate ? new Date(job.appliedDate).toLocaleDateString() : ''}
                   </small>

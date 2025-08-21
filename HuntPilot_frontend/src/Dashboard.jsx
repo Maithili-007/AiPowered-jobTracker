@@ -42,9 +42,9 @@ export default function Dashboard() {
 return (
     <div className="p-4">
       {/* Welcome Heading */}
-      <h1 className="mb-4 text-center fw-bold text-primary">
+      <h2 className="mb-4 text-center fw-bold text-primary">
         Welcome {user?.name || 'User'}
-      </h1>
+      </h2>
 
       {/* Error Alert */}
       {error && (
@@ -74,7 +74,7 @@ return (
       </div>
 
       {/* Recent Applications */}
-      <h2 className="mb-3 fw-semibold text-dark">Recent Applications</h2>
+      <h3 className="mb-3 fw-semibold text-dark">Recent Applications</h3>
       {jobs.length === 0 ? (
         <p className="text-muted">You have no job applications yet.</p>
       ) : (
@@ -86,17 +86,17 @@ return (
             >
               <div className="d-flex w-100 justify-content-between">
                 <h5 className="mb-1 fw-bold text-primary">{job.position}</h5>
-                <small className="text-muted">
+                <small className="text-black">
                   {new Date(job.appliedDate).toLocaleDateString()}
                 </small>
               </div>
-              <p className="mb-1 text-secondary">
+              <p className="mb-1 text-black">
                 {job.company} — {job.location || 'Location not specified'}
               </p>
               <small>
                 Status:{' '}
                 <span
-                  className={`badge bg-caramel text-capitalize text-dark px-3 py-2 rounded-pill`}
+                  className={`badge bg-caramel text-capitalize text-black px-3 py-2 rounded-pill`}
                 >
                   {job.status}
                 </span>

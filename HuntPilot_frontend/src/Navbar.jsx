@@ -60,13 +60,13 @@ return (
       {/* Right side */}
       <ul className="navbar-nav ms-auto align-items-lg-center">
         <li className="nav-item me-2">
-          <span className="navbar-text text-white small">
+          <span className="navbar-text text-dark small">
             Signed in as <strong>{user?.name || "Guest"}</strong>
           </span>
         </li>
         <li className="nav-item">
           <button
-            className="btn btn-light btn-sm"
+            className="btn bg-coffee btn-sm"
             onClick={handleLogout}
           >
             Logout

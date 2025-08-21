@@ -7,13 +7,13 @@ export default function ProfilePage() {
         <div className="col-12 col-md-10 col-lg-8">
           <div className="card shadow-lg border-0 rounded-3">
             {/* Header */}
-            <div className="card-header bg-coffee text-white">
+            <div className="card-header bg-cream text-dark">
               <h4 className="mb-0 fw-bold">Your Profile</h4>
             </div>
 
             {/* Body */}
             <div className="card-body">
-              <p className="text-brown mb-4">
+              <p className="text-black mb-4">
                 Upload your resume once, and we’ll use it to match you against every new job you add.
               </p>
               

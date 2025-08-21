@@ -34,6 +34,11 @@
   color: var(--brown-dark) !important;
 }
 
+.bg-status{
+  background-color: var(--cream) !important;
+  color:#3b2c2c !important;
+}
+
 .bg-espresso {
   background-color: var(--brown-dark) !important;
   color: #fff !important;
@@ -63,7 +68,7 @@
 
 .bg-caramel {
   background-color: var(--caramel) !important;
-  color: #fff !important;
+  color: #231f1f !important;
 }
 
 .bg-dust {
@@ -152,7 +157,12 @@
 /* ===================== CARDS & SECTIONS ===================== */
 .card {
   border-radius: 0.75rem !important;
-  background-color: #fff8f0 !important; /* soft beige */
+  background-color: white !important; /* soft beige */
+  border: 1px solid #e0cfc2 !important;
+}
+.card1{
+  border-radius: 0.75rem !important;
+  background-color: white !important; /* soft beige */
   border: 1px solid #e0cfc2 !important;
 }
 
@@ -191,12 +201,12 @@
 
 /* ===================== NAVBAR ===================== */
 .navbar {
-  background-color: #523929 !important;
+  background-color: #fdf6f0 !important;
 }
 
 .navbar-brand,
 .nav-link {
-  color: #fff !important;
+  color: #3b2c2c !important;
   font-weight: 500;
 }
 

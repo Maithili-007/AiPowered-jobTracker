@@ -75,14 +75,14 @@ export default function JobDetail() {
 return (
   <div className="container my-5">
     {/* 🔙 Back Link */}
-    <Link to="/jobs" className="btn btn-outline-brown mb-4 rounded-pill shadow-sm">
+    <Link to="/jobs" className="btn btn-outline-brown btn-coffee mb-4 rounded-pill shadow-sm">
       ← Back to Jobs
     </Link>
 
     {/* 📄 Job Detail Card */}
     <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
       {/* Header */}
-      <div className="card-header bg-coffee text-light d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+      <div className="card-header bg-cream text-dark d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
         <div className="mb-2 mb-md-0">
           <h4 className="mb-1 fw-bold">{job.position}</h4>
           <small className="text-light">{job.company}</small>
@@ -90,13 +90,13 @@ return (
         <div className="d-flex gap-2">
           {/* Styled Buttons */}
           <button
-            className="btn btn-sm btn-outline-light fw-semibold px-3 rounded-pill d-flex align-items-center gap-1"
+            className="btn btn-sm btn-outline-light btn-coffee fw-semibold px-3 rounded-pill d-flex align-items-center gap-1"
             onClick={() => setEditingJob(job)}
           >
              Edit
           </button>
           <button
-            className="btn btn-sm btn-outline-light fw-semibold px-3 rounded-pill d-flex align-items-center gap-1"
+            className="btn btn-sm btn-outline-light btn-coffee fw-semibold px-3 rounded-pill d-flex align-items-center gap-1"
             onClick={handleDeleteClick}
           >
              Delete
@@ -161,7 +161,7 @@ return (
                   </div>
                 ) : (
                   <div className="card border-coffee mb-4 shadow-sm rounded-3">
-                    <div className="card-header bg-coffee text-light fw-bold">
+                    <div className="card-header bg-cream text-dark fw-bold">
                       Profile Match Score
                     </div>
                     <div className="card-body">
