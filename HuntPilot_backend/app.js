@@ -20,4 +20,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/analysis', analysisRoutes);
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

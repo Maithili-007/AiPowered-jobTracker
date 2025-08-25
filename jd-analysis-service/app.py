@@ -16,6 +16,13 @@ nltk.download('stopwords')
 
 app = Flask(__name__)#initializes your Flask app
 CORS(app)
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "ok"}), 200
+
 
 # 🔧 Load models and extractors once
 nlp = spacy.load('en_core_web_sm')

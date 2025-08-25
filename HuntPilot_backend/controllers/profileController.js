@@ -38,7 +38,7 @@ await User.findByIdAndUpdate(userId,{
   resumeKeywords:data.keywords,
   resumeFilename:req.file.originalname,
    resumePath: filePath   
-  })
+  });
   res.json({message:'Resume uploaded and keywords updated', keywords:data.keywords,resumeFilename: originalname });
 }
   catch(error){
