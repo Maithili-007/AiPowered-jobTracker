@@ -24,7 +24,7 @@ const ResumeEditor = () => {
 
   const fetchUserResumeData = async () => {
     try {
-      const response = await fetch('/api/resume/user-data', {
+      const response = await fetch('https://aipowered-jobtracker.onrender.com/api/resume/user-data', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -38,7 +38,7 @@ const ResumeEditor = () => {
 
   const fetchJobDetails = async () => {
     try {
-      const response = await fetch(`/api/jobs/${jobId}`, {
+      const response = await fetch(`https://aipowered-jobtracker.onrender.com/api/jobs/${jobId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -55,7 +55,7 @@ const ResumeEditor = () => {
     try {
       const jobData = JSON.parse(localStorage.getItem('currentJobForTailoring'));
       
-      const response = await fetch('/api/resume/tailor', {
+      const response = await fetch('https://aipowered-jobtracker.onrender.com/api/resume/tailor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
