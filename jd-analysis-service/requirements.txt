@@ -6,5 +6,16 @@ yake
 nltk==3.8.1
 flask-cors
 gunicorn
+spacy>=3.7.0
+nltk>=3.8.0
+yake>=0.4.8
+rake-nltk>=1.0.6
+python-docx>=0.8.11
+weasyprint>=60.0
+flask==2.3.3
+flask-cors==4.0.0
+
+
+
 
 

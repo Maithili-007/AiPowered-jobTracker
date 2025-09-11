@@ -11,6 +11,7 @@ import Dashboard  from "./Dashboard";
 import Navbar from "./Navbar";
 import JobDetail from "./JobDetail";
 import ProfilePage from "./ProfilePage";
+import ResumeEditor from './ResumeEditor';
 
 function useAuthToken(){
 const context = useContext(AuthContext);//opens the box and gives you access to whatever is inside the context
@@ -49,6 +50,7 @@ function AppContent() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/jobs" element={<ProtectedRoute><JobList /></ProtectedRoute>} />
           <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
+          <Route path="/resume-editor/:id" element={<ResumeEditor />} />
           <Route path="/add-job" element={<ProtectedRoute><AddJob /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>

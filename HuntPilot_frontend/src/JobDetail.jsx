@@ -55,6 +55,11 @@ export default function JobDetail() {
     }
   }, [id, token]);
 
+  const handleTailorResume = () => {
+  // Navigate to resume editor with job ID
+  navigate(`/resume-editor/${job._id}`);
+};
+
   // Delete job
   const handleDeleteClick = async () => {
     if (!window.confirm('Are you sure you want to delete this job?')) return;
@@ -101,6 +106,13 @@ return (
           >
              Delete
           </button>
+          <button 
+    className="btn btn-outline-success" 
+    onClick={handleTailorResume}
+  >
+    <i className="fas fa-magic me-2"></i>
+    Generate Tailored Resume
+  </button>
         </div>
       </div>
 
