@@ -54,7 +54,7 @@ const ResumeEditor = () => {
     setLoading(true);
     try {
       const jobData = JSON.parse(localStorage.getItem('currentJobForTailoring'));
-      
+
       const response = await fetch('https://aipowered-jobtracker.onrender.com/api/resume/tailor', {
         method: 'POST',
         headers: {
@@ -87,26 +87,26 @@ const ResumeEditor = () => {
 
   const downloadPDF = async () => {
     const element = document.getElementById('resume-preview');
-    
+
     try {
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff'
       });
-      
+
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
-      
+
       const imgWidth = 210;
       const pageHeight = 295;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
+
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      
+
       const jobData = JSON.parse(localStorage.getItem('currentJobForTailoring'));
       const fileName = `${jobData.company}_${jobData.position}_Resume.pdf`;
-      
+
       pdf.save(fileName);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -114,191 +114,176 @@ const ResumeEditor = () => {
   };
 
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-12">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2>Resume Tailoring</h2>
-            <div>
-              <button 
-                className="btn btn-secondary me-2" 
-                onClick={() => navigate(-1)}
+    <div className="container mx-auto px-4 py-6">
+      <div className="mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <h2 className="text-2xl font-bold text-primary">Resume Tailoring</h2>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="btn-secondary"
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </button>
+            {!tailoredContent && (
+              <button
+                className="btn-primary"
+                onClick={generateTailoredResume}
+                disabled={loading}
               >
-                Back
+                {loading ? 'Generating...' : 'Generate Tailored Resume'}
               </button>
-              {!tailoredContent && (
-                <button 
-                  className="btn btn-primary me-2" 
-                  onClick={generateTailoredResume}
-                  disabled={loading}
-                >
-                  {loading ? 'Generating...' : 'Generate Tailored Resume'}
-                </button>
-              )}
-              {tailoredContent && (
-                <button 
-                  className="btn btn-success" 
-                  onClick={downloadPDF}
-                >
-                  Download PDF
-                </button>
-              )}
-            </div>
+            )}
+            {tailoredContent && (
+              <button
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                onClick={downloadPDF}
+              >
+                Download PDF
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="row">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Editor Panel */}
-        <div className="col-md-6">
-          <div className="card">
-            <div className="card-header">
-              <h5>Resume Editor</h5>
-            </div>
-            <div className="card-body" style={{maxHeight: '80vh', overflowY: 'auto'}}>
-              {tailoredContent ? (
-                <div>
-                  {/* Professional Summary */}
-                  <div className="mb-4">
-                    <label className="form-label fw-bold">Professional Summary</label>
-                    <textarea
-                      className="form-control"
-                      rows="5"
-                      value={tailoredContent.summary || ''}
-                      onChange={(e) => handleContentChange('summary', e.target.value)}
-                      placeholder="Professional Summary"
-                      style={{resize: 'vertical'}}
-                    />
-                  </div>
+        <div className="card">
+          <div className="bg-primary text-white p-4">
+            <h5 className="font-semibold text-lg">Resume Editor</h5>
+          </div>
+          <div className="p-6 max-h-[80vh] overflow-y-auto">
+            {tailoredContent ? (
+              <div>
+                {/* Professional Summary */}
+                <div className="mb-6">
+                  <label className="form-label font-bold">Professional Summary</label>
+                  <textarea
+                    className="form-input resize-y"
+                    rows="5"
+                    value={tailoredContent.summary || ''}
+                    onChange={(e) => handleContentChange('summary', e.target.value)}
+                    placeholder="Professional Summary"
+                  />
+                </div>
 
-                  {/* Experience Section */}
-                  <div className="mb-4">
-                    <label className="form-label fw-bold">Experience</label>
-                    {tailoredContent.experience?.map((exp, index) => (
-                      <div key={index} className="border p-3 mb-3 rounded bg-light">
-                        <div className="row">
-                          <div className="col-md-6">
-                            <input
-                              type="text"
-                              className="form-control mb-2"
-                              placeholder="Job Title"
-                              value={exp.title || ''}
-                              onChange={(e) => {
-                                const newExp = [...tailoredContent.experience];
-                                newExp[index].title = e.target.value;
-                                handleContentChange('experience', newExp);
-                              }}
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <input
-                              type="text"
-                              className="form-control mb-2"
-                              placeholder="Company"
-                              value={exp.company || ''}
-                              onChange={(e) => {
-                                const newExp = [...tailoredContent.experience];
-                                newExp[index].company = e.target.value;
-                                handleContentChange('experience', newExp);
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <textarea
-                          className="form-control"
-                          rows="4"
-                          placeholder="Job Description & Achievements"
-                          value={exp.description || ''}
+                {/* Experience Section */}
+                <div className="mb-6">
+                  <label className="form-label font-bold">Experience</label>
+                  {tailoredContent.experience?.map((exp, index) => (
+                    <div key={index} className="border border-gray-200 bg-gray-50 p-4 mb-4 rounded-lg">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="Job Title"
+                          value={exp.title || ''}
                           onChange={(e) => {
                             const newExp = [...tailoredContent.experience];
-                            newExp[index].description = e.target.value;
+                            newExp[index].title = e.target.value;
                             handleContentChange('experience', newExp);
                           }}
-                          style={{resize: 'vertical'}}
+                        />
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="Company"
+                          value={exp.company || ''}
+                          onChange={(e) => {
+                            const newExp = [...tailoredContent.experience];
+                            newExp[index].company = e.target.value;
+                            handleContentChange('experience', newExp);
+                          }}
                         />
                       </div>
-                    ))}
-                  </div>
+                      <textarea
+                        className="form-input resize-y"
+                        rows="4"
+                        placeholder="Job Description & Achievements"
+                        value={exp.description || ''}
+                        onChange={(e) => {
+                          const newExp = [...tailoredContent.experience];
+                          newExp[index].description = e.target.value;
+                          handleContentChange('experience', newExp);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
 
-                  {/* Skills Section */}
-                  <div className="mb-4">
-                    <label className="form-label fw-bold">Skills</label>
-                    <textarea
-                      className="form-control"
-                      rows="3"
-                      value={tailoredContent.skills || ''}
-                      onChange={(e) => handleContentChange('skills', e.target.value)}
-                      placeholder="Skills (comma-separated)"
-                      style={{resize: 'vertical'}}
-                    />
-                  </div>
+                {/* Skills Section */}
+                <div className="mb-6">
+                  <label className="form-label font-bold">Skills</label>
+                  <textarea
+                    className="form-input resize-y"
+                    rows="3"
+                    value={tailoredContent.skills || ''}
+                    onChange={(e) => handleContentChange('skills', e.target.value)}
+                    placeholder="Skills (comma-separated)"
+                  />
                 </div>
-              ) : (
-                <div className="text-center py-5">
-                  <i className="fas fa-magic fa-3x text-muted mb-3"></i>
-                  <p className="text-muted">Click "Generate Tailored Resume" to start editing your resume for this job.</p>
-                </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500">Click "Generate Tailored Resume" to start editing your resume for this job.</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Preview Panel */}
-        <div className="col-md-6">
-          <div className="card">
-            <div className="card-header">
-              <h5>Resume Preview</h5>
-            </div>
-            <div className="card-body" style={{maxHeight: '80vh', overflowY: 'auto'}}>
-              <div id="resume-preview" className="bg-white p-4 border" style={{minHeight: '800px'}}>
-                {tailoredContent ? (
-                  <div>
-                    {/* Header */}
-                    <div className="text-center mb-4 pb-3 border-bottom">
-                      <h2 className="mb-2">{resumeData.personalInfo?.name || 'Your Name'}</h2>
-                      <p className="mb-1 text-muted">{resumeData.personalInfo?.email}</p>
-                      <p className="mb-1 text-muted">{resumeData.personalInfo?.phone}</p>
-                      <p className="mb-0 text-muted">{resumeData.personalInfo?.location}</p>
-                    </div>
+        <div className="card">
+          <div className="bg-primary text-white p-4">
+            <h5 className="font-semibold text-lg">Resume Preview</h5>
+          </div>
+          <div className="p-6 max-h-[80vh] overflow-y-auto">
+            <div id="resume-preview" className="bg-white p-6 border border-gray-200 min-h-[800px]">
+              {tailoredContent ? (
+                <div>
+                  {/* Header */}
+                  <div className="text-center mb-6 pb-4 border-b-2 border-gray-300">
+                    <h2 className="text-3xl font-bold mb-2">{resumeData.personalInfo?.name || 'Your Name'}</h2>
+                    <p className="text-gray-600 mb-1">{resumeData.personalInfo?.email}</p>
+                    <p className="text-gray-600 mb-1">{resumeData.personalInfo?.phone}</p>
+                    <p className="text-gray-600">{resumeData.personalInfo?.location}</p>
+                  </div>
 
-                    {/* Summary */}
-                    <div className="mb-4">
-                      <h4 className="text-primary border-bottom pb-1">Professional Summary</h4>
-                      <p style={{whiteSpace: 'pre-wrap', lineHeight: '1.6'}}>{tailoredContent.summary}</p>
-                    </div>
+                  {/* Summary */}
+                  <div className="mb-6">
+                    <h4 className="text-accent font-bold text-xl border-b border-gray-300 pb-1 mb-3">Professional Summary</h4>
+                    <p className="whitespace-pre-wrap leading-relaxed">{tailoredContent.summary}</p>
+                  </div>
 
-                    {/* Experience */}
-                    <div className="mb-4">
-                      <h4 className="text-primary border-bottom pb-1">Professional Experience</h4>
-                      {tailoredContent.experience?.map((exp, index) => (
-                        <div key={index} className="mb-4">
-                          <div className="d-flex justify-content-between align-items-start">
-                            <div>
-                              <h5 className="mb-1">{exp.title}</h5>
-                              <h6 className="text-primary mb-1">{exp.company}</h6>
-                            </div>
-                            <small className="text-muted">{exp.duration}</small>
+                  {/* Experience */}
+                  <div className="mb-6">
+                    <h4 className="text-accent font-bold text-xl border-b border-gray-300 pb-1 mb-3">Professional Experience</h4>
+                    {tailoredContent.experience?.map((exp, index) => (
+                      <div key={index} className="mb-5">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h5 className="font-bold text-lg mb-1">{exp.title}</h5>
+                            <h6 className="text-accent font-semibold mb-1">{exp.company}</h6>
                           </div>
-                          <p style={{whiteSpace: 'pre-wrap', lineHeight: '1.6'}} className="mt-2">
-                            {exp.description}
-                          </p>
+                          <small className="text-gray-600">{exp.duration}</small>
                         </div>
-                      ))}
-                    </div>
+                        <p className="whitespace-pre-wrap leading-relaxed mt-2">
+                          {exp.description}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
 
-                    {/* Skills */}
-                    <div className="mb-4">
-                      <h4 className="text-primary border-bottom pb-1">Technical Skills</h4>
-                      <p style={{whiteSpace: 'pre-wrap', lineHeight: '1.6'}}>{tailoredContent.skills}</p>
-                    </div>
+                  {/* Skills */}
+                  <div className="mb-6">
+                    <h4 className="text-accent font-bold text-xl border-b border-gray-300 pb-1 mb-3">Technical Skills</h4>
+                    <p className="whitespace-pre-wrap leading-relaxed">{tailoredContent.skills}</p>
                   </div>
-                ) : (
-                  <div className="text-center text-muted py-5">
-                    <i className="fas fa-file-alt fa-4x mb-3"></i>
-                    <p>Resume preview will appear here</p>
-                  </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="text-center text-gray-400 py-12">
+                  <p>Resume preview will appear here</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

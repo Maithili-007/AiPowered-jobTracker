@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom'; // useNavigate for v6
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from './AuthContext';
 import AddJob from './AddJob';
@@ -56,9 +56,9 @@ export default function JobDetail() {
   }, [id, token]);
 
   const handleTailorResume = () => {
-  // Navigate to resume editor with job ID
-  navigate(`/resume-editor/${job._id}`);
-};
+    // Navigate to resume editor with job ID
+    navigate(`/resume-editor/${job._id}`);
+  };
 
   // Delete job
   const handleDeleteClick = async () => {
@@ -74,175 +74,169 @@ export default function JobDetail() {
     }
   };
 
-  if (error) return <p className="text-danger">{error}</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
   if (!job) return <p>Loading…</p>;
 
-return (
-  <div className="container my-5">
-    {/* 🔙 Back Link */}
-    <Link to="/jobs" className="btn btn-outline-brown btn-coffee mb-4 rounded-pill shadow-sm">
-      ← Back to Jobs
-    </Link>
+  return (
+    <div className="container mx-auto my-8 px-4 max-w-4xl">
+      {/* 🔙 Back Link */}
+      <Link to="/jobs" className="inline-block mb-6 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+        ← Back to Jobs
+      </Link>
 
-    {/* 📄 Job Detail Card */}
-    <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
-      {/* Header */}
-      <div className="card-header bg-cream text-dark d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-        <div className="mb-2 mb-md-0">
-          <h4 className="mb-1 fw-bold">{job.position}</h4>
-          <small className="text-light">{job.company}</small>
+      {/* 📄 Job Detail Card */}
+      <div className="card overflow-hidden">
+        {/* Header */}
+        <div className="bg-primary text-white p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h4 className="font-bold text-2xl mb-1">{job.position}</h4>
+            <small className="text-gray-200">{job.company}</small>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {/* Styled Buttons */}
+            <button
+              className="px-4 py-2 bg-primary-dark hover:bg-primary-light text-white font-semibold rounded-lg transition-colors"
+              onClick={() => setEditingJob(job)}
+            >
+              Edit
+            </button>
+            <button
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+              onClick={handleDeleteClick}
+            >
+              Delete
+            </button>
+            <button
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors"
+              onClick={handleTailorResume}
+            >
+              Generate Tailored Resume
+            </button>
+          </div>
         </div>
-        <div className="d-flex gap-2">
-          {/* Styled Buttons */}
-          <button
-            className="btn btn-sm btn-outline-light btn-coffee fw-semibold px-3 rounded-pill d-flex align-items-center gap-1"
-            onClick={() => setEditingJob(job)}
-          >
-             Edit
-          </button>
-          <button
-            className="btn btn-sm btn-outline-light btn-coffee fw-semibold px-3 rounded-pill d-flex align-items-center gap-1"
-            onClick={handleDeleteClick}
-          >
-             Delete
-          </button>
-          <button 
-    className="btn btn-outline-success" 
-    onClick={handleTailorResume}
-  >
-    <i className="fas fa-magic me-2"></i>
-    Generate Tailored Resume
-  </button>
-        </div>
-      </div>
 
-      {/* Body */}
-      <div className="card-body">
-        {/* ✍️ Edit Mode */}
-        {editingJob ? (
-          <AddJob
-            initialData={editingJob}
-            onSuccess={() => {
-              setEditingJob(null);
-              window.location.reload();
-            }}
-            onCancel={() => setEditingJob(null)}
-          />
-        ) : (
-          <>
-            {/* Status & Date */}
-            <div className="row mb-4">
-              <div className="col-12 col-md-6 mb-2">
-                <strong>Status:</strong>{" "}
-                <span className={`badge bg-${{
-                  applied: "caramel",
-                  interviewing: "caramel",
-                  offer: "caramel",
-                  rejected: "caramel"
-                }[job.status] || "secondary"} text-dark px-3 py-2 rounded-pill`}>
-                  {job.status}
-                </span>
+        {/* Body */}
+        <div className="p-6">
+          {/* ✍️ Edit Mode */}
+          {editingJob ? (
+            <AddJob
+              initialData={editingJob}
+              onSuccess={() => {
+                setEditingJob(null);
+                window.location.reload();
+              }}
+              onCancel={() => setEditingJob(null)}
+            />
+          ) : (
+            <>
+              {/* Status & Date */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <strong>Status:</strong>{" "}
+                  <span className={`inline-block ml-2 px-3 py-1 rounded-full text-sm font-medium ${{
+                      applied: "bg-blue-100 text-blue-800",
+                      interviewing: "bg-yellow-100 text-yellow-800",
+                      offer: "bg-emerald-100 text-emerald-800",
+                      rejected: "bg-gray-100 text-gray-800"
+                    }[job.status] || "bg-gray-100 text-gray-800"
+                    }`}>
+                    {job.status}
+                  </span>
+                </div>
+                <div>
+                  <strong>Applied:</strong>{" "}
+                  {new Date(job.appliedDate).toLocaleDateString()}
+                </div>
               </div>
-              <div className="col-12 col-md-6">
-                <strong>Applied:</strong>{" "}
-                {new Date(job.appliedDate).toLocaleDateString()}
-              </div>
-            </div>
 
-            {/* Location */}
-            {job.location && (
-              <p className="mb-4">
-                <strong> Location:</strong> {job.location}
-              </p>
-            )}
+              {/* Location */}
+              {job.location && (
+                <p className="mb-4">
+                  <strong> Location:</strong> {job.location}
+                </p>
+              )}
 
-            {/* Notes */}
-            {job.notes && (
-              <div className="mb-4">
-                <strong> Notes:</strong>
-                <p className="mt-2 text-muted">{job.notes}</p>
-              </div>
-            )}
+              {/* Notes */}
+              {job.notes && (
+                <div className="mb-6">
+                  <strong> Notes:</strong>
+                  <p className="mt-2 text-gray-600">{job.notes}</p>
+                </div>
+              )}
 
-            {/* Profile Match Section */}
-            {matchResult && (
-              <>
-                {matchResult.error ? (
-                  <div className="alert alert-warning rounded-3 shadow-sm">
-                    {matchResult.error}
-                  </div>
-                ) : (
-                  <div className="card border-coffee mb-4 shadow-sm rounded-3">
-                    <div className="card-header bg-cream text-dark fw-bold">
-                      Profile Match Score
+              {/* Profile Match Section */}
+              {matchResult && (
+                <>
+                  {matchResult.error ? (
+                    <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg shadow-sm">
+                      {matchResult.error}
                     </div>
-                    <div className="card-body">
-                      {/* Score */}
-                      <div className="d-flex justify-content-between align-items-center mb-3">
-                        <span>Score</span>
-                        <span className="fw-bold">{matchResult.score}%</span>
+                  ) : (
+                    <div className="card border-accent mb-6">
+                      <div className="bg-accent text-white font-bold p-4">
+                        Profile Match Score
                       </div>
-                      <div
-                        className="progress mb-4 rounded-pill"
-                        style={{ height: "1.5rem" }}
-                      >
-                        <div
-                          className="progress-bar bg-coffee"
-                          role="progressbar"
-                          style={{ width: `${matchResult.score}%` }}
-                          aria-valuenow={matchResult.score}
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                        >
-                          {matchResult.score}%
+                      <div className="p-6">
+                        {/* Score */}
+                        <div className="flex justify-between items-center mb-4">
+                          <span>Score</span>
+                          <span className="font-bold">{matchResult.score}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-6 mb-6">
+                          <div
+                            className="bg-accent h-6 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                            style={{ width: `${matchResult.score}%` }}
+                          >
+                            {matchResult.score}%
+                          </div>
+                        </div>
+
+                        {/* ☕ Matched Keywords */}
+                        <div className="mb-4">
+                          <h6 className="text-accent font-semibold mb-2">Matched Keywords</h6>
+                          {matchResult.matched.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                              {matchResult.matched.map((kw, i) => (
+                                <span
+                                  key={i}
+                                  className="px-3 py-1 bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-full text-sm"
+                                >
+                                  {kw}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-gray-500">None</p>
+                          )}
+                        </div>
+
+                        {/* 🫘 Missing Keywords */}
+                        <div>
+                          <h6 className="text-accent font-semibold mb-2">Missing Keywords</h6>
+                          {matchResult.missing.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                              {matchResult.missing.map((kw, i) => (
+                                <span
+                                  key={i}
+                                  className="px-3 py-1 bg-gray-100 border border-gray-300 text-gray-700 rounded-full text-sm"
+                                >
+                                  {kw}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-gray-500">None</p>
+                          )}
                         </div>
                       </div>
-
-                      {/* ☕ Matched Keywords */}
-                      <div className="mb-3">
-                        <h6 className="text-coffee">Matched Keywords</h6>
-                        {matchResult.matched.length > 0 ? (
-                          matchResult.matched.map((kw, i) => (
-                            <span
-                              key={i}
-                              className="badge bg-mocha border-coffee text-dark me-1 mb-1"
-                            >
-                              {kw}
-                            </span>
-                          ))
-                        ) : (
-                          <p className="text-muted">None</p>
-                        )}
-                      </div>
-
-                      {/* 🫘 Missing Keywords */}
-                      <div>
-                        <h6 className="text-coffee">Missing Keywords</h6>
-                        {matchResult.missing.length > 0 ? (
-                          matchResult.missing.map((kw, i) => (
-                            <span
-                              key={i}
-                              className="badge bg-soft-white border-coffee text-dark me-1 mb-1"
-                            >
-                              {kw}
-                            </span>
-                          ))
-                        ) : (
-                          <p className="text-muted">None</p>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                )}
-              </>
-            )}
-          </>
-        )}
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }
-
-
-

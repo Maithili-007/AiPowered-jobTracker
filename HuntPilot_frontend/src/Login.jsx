@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import AuthContext from "./AuthContext";
-import { useNavigate , Link} from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -24,77 +24,76 @@ export default function Login() {
       }
     }
   };
-return (
-  <div className="container d-flex align-items-center justify-content-center min-vh-100">
-    <div className="p-4 w-100" style={{ maxWidth: "420px" }}>
-      {/* Title */}
-      <h2 className="mb-4 text-center fw-bold text-coffee">Sign In</h2>
+  return (
+    <div className="container mx-auto flex items-center justify-center min-h-screen px-4">
+      <div className="w-full max-w-md">
+        {/* Title */}
+        <h2 className="mb-6 text-center font-bold text-3xl text-primary">Sign In</h2>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit}>
-        {/* Email */}
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label text-brown-dark">
-            Email Address
-          </label>
-          <input
-            type="email"
-            className="form-control border-coffee"
-            id="email"
-            name="email"
-            autoComplete="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            placeholder="Enter your email"
-          />
-        </div>
-
-        {/* Password */}
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label text-brown-dark">
-            Password
-          </label>
-          <input
-            type="password"
-            className="form-control border-coffee"
-            id="password"
-            name="password"
-            autoComplete="current-password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            placeholder="Enter your password"
-          />
-        </div>
-
-        {/* Login Button */}
-        <button type="submit" className="btn btn-coffee w-100">
-          Log In
-        </button>
-
-        {/* Message */}
-        {message && (
-          <div className="alert bg-sand mt-3 text-center p-2 border-coffee text-brown-dark">
-            {message}
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md">
+          {/* Email */}
+          <div className="mb-4">
+            <label htmlFor="email" className="form-label">
+              Email Address
+            </label>
+            <input
+              type="email"
+              className="form-input"
+              id="email"
+              name="email"
+              autoComplete="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              placeholder="Enter your email"
+            />
           </div>
-        )}
-      </form>
 
-      {/* Redirect */}
-      <div className="text-center mt-3">
-        <small className="text-brown-dark">
-          Don&apos;t have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-coffee text-decoration-none fw-semibold"
-          >
-            Register here
-          </Link>
-        </small>
+          {/* Password */}
+          <div className="mb-6">
+            <label htmlFor="password" className="form-label">
+              Password
+            </label>
+            <input
+              type="password"
+              className="form-input"
+              id="password"
+              name="password"
+              autoComplete="current-password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              placeholder="Enter your password"
+            />
+          </div>
+
+          {/* Login Button */}
+          <button type="submit" className="btn-primary w-full">
+            Log In
+          </button>
+
+          {/* Message */}
+          {message && (
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-center text-amber-800">
+              {message}
+            </div>
+          )}
+        </form>
+
+        {/* Redirect */}
+        <div className="text-center mt-4">
+          <small className="text-gray-600">
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-accent hover:text-accent-dark font-semibold transition-colors"
+            >
+              Register here
+            </Link>
+          </small>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }
-

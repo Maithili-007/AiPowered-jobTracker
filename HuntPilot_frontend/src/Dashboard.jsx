@@ -3,11 +3,19 @@ import axios from 'axios';
 import AuthContext from './AuthContext';
 
 const statusBadgeColors = {
-  applied: 'soft-brown',      // light mocha background
-  interviewing: 'coffee',     // warm brown
-  offer: 'accent-brown',      // strong coffee accent
-  rejected: 'sand'            // soft beige for rejected
+  applied: 'bg-blue-100 text-blue-800',
+  interviewing: 'bg-yellow-100 text-yellow-800',
+  offer: 'bg-emerald-100 text-emerald-800',
+  rejected: 'bg-gray-100 text-gray-800'
 };
+
+const statusCardColors = {
+  applied: 'bg-blue-50 border-blue-200',
+  interviewing: 'bg-yellow-50 border-yellow-200',
+  offer: 'bg-emerald-50 border-emerald-200',
+  rejected: 'bg-gray-50 border-gray-200'
+};
+
 export default function Dashboard() {
   const { token, user } = useContext(AuthContext);
   const [jobs, setJobs] = useState([]);
@@ -15,12 +23,12 @@ export default function Dashboard() {
   const [recentJobs, setRecentJobs] = useState([]);
 
   useEffect(() => {
-     console.log("Token in effect:", token); 
-    if(!token) return;
+    console.log("Token in effect:", token);
+    if (!token) return;
     axios.get('https://aipowered-jobtracker.onrender.com/api/jobs', {
       headers: { Authorization: `Bearer ${token}` }
     })
-     .then((res) => {
+      .then((res) => {
         const sorted = res.data.sort(
           (a, b) => new Date(b.appliedDate) - new Date(a.appliedDate)
         );
@@ -28,10 +36,10 @@ export default function Dashboard() {
         setRecentJobs(recent);
         setJobs(sorted);
       })
-    .catch(err => {
-      console.error(err);
-      setError('Failed to load jobs');
-    });
+      .catch(err => {
+        console.error(err);
+        setError('Failed to load jobs');
+      });
   }, [token]);
 
   const statusCounts = jobs.reduce((acc, job) => {
@@ -39,68 +47,62 @@ export default function Dashboard() {
     return acc;
   }, {});
 
-return (
+  return (
     <div className="p-4">
       {/* Welcome Heading */}
-      <h2 className="mb-4 text-center fw-bold text-primary">
+      <h2 className="mb-6 text-center font-bold text-3xl text-primary">
         Welcome {user?.name || 'User'}
       </h2>
 
       {/* Error Alert */}
       {error && (
-        <div className="alert text-center bg-soft-brown border-0 shadow-sm rounded-3">
+        <div className="bg-red-50 border border-red-200 text-red-800 text-center p-4 rounded-lg shadow-sm mb-6">
           {error}
         </div>
       )}
 
       {/* Status Summary Cards */}
-      <div className="row g-3 mb-4 justify-content-center">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {['applied', 'interviewing', 'offer', 'rejected'].map((status) => (
-          <div key={status} className="col-6 col-md-3">
-            <div
-              className={`card text-center shadow-sm border-0 bg-${statusBadgeColors[status]} rounded-3`}
-            >
-              <div className="card-body">
-                <h6 className="card-title text-capitalize fw-semibold text-dark">
-                  {status}
-                </h6>
-                <p className="card-text fs-3 fw-bold text-dark">
-                  {statusCounts[status] || 0}
-                </p>
-              </div>
+          <div key={status} className="text-center">
+            <div className={`card ${statusCardColors[status]} border p-6`}>
+              <h6 className="text-sm font-semibold text-gray-700 uppercase mb-2">
+                {status}
+              </h6>
+              <p className="text-3xl font-bold text-gray-900">
+                {statusCounts[status] || 0}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Recent Applications */}
-      <h3 className="mb-3 fw-semibold text-dark">Recent Applications</h3>
+      <h3 className="mb-4 font-semibold text-xl text-gray-900">Recent Applications</h3>
       {jobs.length === 0 ? (
-        <p className="text-muted">You have no job applications yet.</p>
+        <p className="text-gray-500">You have no job applications yet.</p>
       ) : (
-        <div className="list-group shadow-sm rounded-3">
+        <div className="space-y-3">
           {recentJobs.map((job) => (
             <div
               key={job._id}
-              className="list-group-item list-group-item-action flex-column align-items-start border-0 bg-white-custom"
+              className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
             >
-              <div className="d-flex w-100 justify-content-between">
-                <h5 className="mb-1 fw-bold text-primary">{job.position}</h5>
-                <small className="text-black">
+              <div className="flex justify-between items-start flex-wrap gap-2">
+                <h5 className="font-bold text-lg text-primary">{job.position}</h5>
+                <small className="text-gray-600">
                   {new Date(job.appliedDate).toLocaleDateString()}
                 </small>
               </div>
-              <p className="mb-1 text-black">
+              <p className="text-gray-700 mt-1">
                 {job.company} — {job.location || 'Location not specified'}
               </p>
-              <small>
-                Status:{' '}
-                <span
-                  className={`badge bg-caramel text-capitalize text-black px-3 py-2 rounded-pill`}
-                >
+              <div className="mt-2">
+                <span className="text-sm text-gray-600">Status: </span>
+                <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${statusBadgeColors[job.status]}`}>
                   {job.status}
                 </span>
-              </small>
+              </div>
             </div>
           ))}
         </div>

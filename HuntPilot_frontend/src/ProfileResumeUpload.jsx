@@ -2,30 +2,30 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from './AuthContext';
 
-export default function ProfileResumeUpload(){
-  const {token} = useContext(AuthContext);
+export default function ProfileResumeUpload() {
+  const { token } = useContext(AuthContext);
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
   const [resumeFilename, setResumeFilename] = useState('');
   const [showUpload, setShowUpload] = useState(false);
 
- useEffect(() => {
-  async function fetchResume() {
-    try {
-      const res = await axios.get('https://aipowered-jobtracker.onrender.com/api/profile/resume', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setResumeFilename(res.data.resumeFilename);
-    } catch {
-      setMessage('Failed to load resume info');
+  useEffect(() => {
+    async function fetchResume() {
+      try {
+        const res = await axios.get('https://aipowered-jobtracker.onrender.com/api/profile/resume', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setResumeFilename(res.data.resumeFilename);
+      } catch {
+        setMessage('Failed to load resume info');
+      }
     }
-  }
-  if (token) {
-    fetchResume();
-  }
-}, [token]);
+    if (token) {
+      fetchResume();
+    }
+  }, [token]);
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) return;
 
@@ -41,7 +41,7 @@ export default function ProfileResumeUpload(){
       });
       setMessage(res.data.message);
       //setResumeFilename(file.name);
-      setResumeFilename(res.data.resumeFilename); 
+      setResumeFilename(res.data.resumeFilename);
       setFile(null);
       setShowUpload(false);
     } catch {
@@ -63,9 +63,9 @@ export default function ProfileResumeUpload(){
     }
   };
 
-   const handleDownload = async () => {
+  const handleDownload = async () => {
     try {
-      const response = await axios.get( 'https://aipowered-jobtracker.onrender.com/api/profile/resume/download', {
+      const response = await axios.get('https://aipowered-jobtracker.onrender.com/api/profile/resume/download', {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'//tells Axios to handle the file as binary data
       });
@@ -73,7 +73,7 @@ export default function ProfileResumeUpload(){
       const url = URL.createObjectURL(blob);//Creates a temporary file URL
       const link = document.createElement('a');
       link.href = url;
-      link.download = resumeFilename; 
+      link.download = resumeFilename;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -85,94 +85,91 @@ export default function ProfileResumeUpload(){
   };
 
   return (
-  <div className="card mb-4 shadow-sm border-0 rounded-3">
-    <div className="card-body">
-      {resumeFilename ? (
-        <>
-          {/* Resume Info + Action Buttons */}
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
-            <div className="mb-2 mb-md-0">
-              <h5 className="card-title mb-1 text-brown-dark">Uploaded Resume</h5>
-              <p
-                className="mb-0 text-muted text-truncate"
-                style={{ maxWidth: "250px" }}
-              >
-                {resumeFilename}
-              </p>
+    <div className="card mb-6">
+      <div className="p-6">
+        {resumeFilename ? (
+          <>
+            {/* Resume Info + Action Buttons */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+              <div>
+                <h5 className="font-semibold text-lg text-gray-900 mb-1">Uploaded Resume</h5>
+                <p className="text-gray-600 truncate max-w-xs">
+                  {resumeFilename}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className="px-4 py-2 bg-accent hover:bg-accent-dark text-white rounded-lg text-sm font-medium transition-colors"
+                  onClick={handleDownload}
+                >
+                  View Resume
+                </button>
+                <button
+                  className="px-4 py-2 bg-secondary hover:bg-secondary-dark text-white rounded-lg text-sm font-medium transition-colors"
+                  onClick={() => setShowUpload(!showUpload)}
+                >
+                  {showUpload ? "Cancel" : "Update"}
+                </button>
+                <button
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-            <div className="d-flex flex-wrap gap-2">
-              <button
-                className="btn btn-brown btn-sm"
-                onClick={handleDownload}
-              >
-                View Resume
-              </button>
-              <button
-                className="btn btn-brown btn-sm"
-                onClick={() => setShowUpload(!showUpload)}
-              >
-                {showUpload ? "Cancel" : "Update"}
-              </button>
-              <button
-                className="btn btn-brown btn-sm"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="text-center mb-3">
-          <p className="text-muted">No resume uploaded yet.</p>
-          <button
-            className="btn btn-brown btn-sm"
-            onClick={() => setShowUpload(true)}
-          >
-            Upload Resume
-          </button>
-        </div>
-      )}
-
-      {/* Upload Form */}
-      {showUpload && (
-        <form onSubmit={handleSubmit} className="bg-brown-light p-3 rounded">
-          <div className="mb-3">
-            <input
-              type="file"
-              accept=".pdf,.txt"
-              className="form-control"
-              onChange={(e) => setFile(e.target.files[0])}
-            />
-          </div>
-          <div className="d-flex flex-wrap gap-2">
+          </>
+        ) : (
+          <div className="text-center mb-4">
+            <p className="text-gray-500 mb-3">No resume uploaded yet.</p>
             <button
-              type="submit"
-              className="btn btn-brown btn-sm"
-              disabled={!file}
+              className="btn-primary"
+              onClick={() => setShowUpload(true)}
             >
-              Upload
-            </button>
-            <button
-              type="button"
-              className="btn btn-brown btn-sm"
-              onClick={() => {
-                setShowUpload(false);
-                setFile(null);
-              }}
-            >
-              Cancel
+              Upload Resume
             </button>
           </div>
-        </form>
-      )}
+        )}
 
-      {/* Feedback Message */}
-      {message && (
-        <div className="alert alert-brown mt-3 mb-0 text-center">{message}</div>
-      )}
+        {/* Upload Form */}
+        {showUpload && (
+          <form onSubmit={handleSubmit} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="mb-4">
+              <input
+                type="file"
+                accept=".pdf,.txt"
+                className="form-input"
+                onChange={(e) => setFile(e.target.files[0])}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={!file}
+              >
+                Upload
+              </button>
+              <button
+                type="button"
+                className="btn-outline"
+                onClick={() => {
+                  setShowUpload(false);
+                  setFile(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Feedback Message */}
+        {message && (
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg text-center">{message}</div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 
 }

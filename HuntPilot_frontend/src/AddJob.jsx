@@ -1,77 +1,77 @@
-import React, { useState, useContext,useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import AuthContext from './AuthContext';
 import { useNavigate, NavLink } from 'react-router-dom';
 
-export default function AddJob({ initialData, onSuccess, onCancel }){
-  const[form,setForm]=useState({position:'',company: '', status: 'applied', location: '', notes: '',...initialData || {}});
+export default function AddJob({ initialData, onSuccess, onCancel }) {
+  const [form, setForm] = useState({ position: '', company: '', status: 'applied', location: '', notes: '', ...initialData || {} });
   const [message, setMessage] = useState('');
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
-const [description, setDescription] = useState('');
-const [suggestedKeywords, setSuggestedKeywords] = useState([]);
-const [selectedKeywords, setSelectedKeywords] = useState([]);
-const [loadingKeywords, setLoadingKeywords] = useState(false);
-const [keywordError, setKeywordError] = useState('');
+  const [description, setDescription] = useState('');
+  const [suggestedKeywords, setSuggestedKeywords] = useState([]);
+  const [selectedKeywords, setSelectedKeywords] = useState([]);
+  const [loadingKeywords, setLoadingKeywords] = useState(false);
+  const [keywordError, setKeywordError] = useState('');
 
 
   useEffect(() => {
-  setForm({
-    position: "",
-    company: "",
-    status: "applied",
-    location: "",
-    notes: "",
-    ...(initialData || {})
-  });
-  setDescription(initialData?.description || '');
+    setForm({
+      position: "",
+      company: "",
+      status: "applied",
+      location: "",
+      notes: "",
+      ...(initialData || {})
+    });
+    setDescription(initialData?.description || '');
     setSelectedKeywords(initialData?.keywords || []);
-}, [initialData]);
+  }, [initialData]);
 
-  const handleChange= (e)=>{
-    setForm({...form,[e.target.name]:e.target.value});//curly brackets because you're creating a new object.
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });//curly brackets because you're creating a new object.
   }
 
-useEffect(() => {
-  if (!description) {
-    setSuggestedKeywords([]);//dont do anything if no description
-    return;
-  }
-  const timeout = setTimeout(async () => {
-    setLoadingKeywords(true);//we are now starting to extract keywords
-    setKeywordError('');
-    try {
-      const resp = await fetch('https://aipowered-jobtracker-1.onrender.com/extract-keywords', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ description }),
-      });
-      if (!resp.ok) throw new Error(`Status ${resp.status}`);
-      const { keywords } = await resp.json();
-      setSuggestedKeywords(keywords);
-      if (selectedKeywords.length === 0) {
-        //setSelectedKeywords(keywords.slice(0, 5));
-        setSelectedKeywords(keywords);
-      }
-    } catch (e) {
-      console.error('Fetch error:', e.message);
-      setKeywordError('Failed to extract keywords');
-    } finally {
-      setLoadingKeywords(false);
+  useEffect(() => {
+    if (!description) {
+      setSuggestedKeywords([]);//dont do anything if no description
+      return;
     }
-  }, 500);
-  return () => clearTimeout(timeout);//cancel the previous timeout before setting a new one
-}, [description, token]);
+    const timeout = setTimeout(async () => {
+      setLoadingKeywords(true);//we are now starting to extract keywords
+      setKeywordError('');
+      try {
+        const resp = await fetch('https://aipowered-jobtracker-1.onrender.com/extract-keywords', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ description }),
+        });
+        if (!resp.ok) throw new Error(`Status ${resp.status}`);
+        const { keywords } = await resp.json();
+        setSuggestedKeywords(keywords);
+        if (selectedKeywords.length === 0) {
+          //setSelectedKeywords(keywords.slice(0, 5));
+          setSelectedKeywords(keywords);
+        }
+      } catch (e) {
+        console.error('Fetch error:', e.message);
+        setKeywordError('Failed to extract keywords');
+      } finally {
+        setLoadingKeywords(false);
+      }
+    }, 500);
+    return () => clearTimeout(timeout);//cancel the previous timeout before setting a new one
+  }, [description, token]);
 
-  const handleSubmit= async (e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const isEdit = !!(initialData && initialData._id);
-    const url = isEdit?`https://aipowered-jobtracker.onrender.com/api/jobs/${initialData._id}`: 'https://aipowered-jobtracker.onrender.com/api/jobs';
-    const method = isEdit? "put":"post";
+    const url = isEdit ? `https://aipowered-jobtracker.onrender.com/api/jobs/${initialData._id}` : 'https://aipowered-jobtracker.onrender.com/api/jobs';
+    const method = isEdit ? "put" : "post";
 
     const payload = {
       ...form,
@@ -80,8 +80,8 @@ useEffect(() => {
     };
 
 
-    try{
-      const res = await axios[method](url,payload,{headers:{Authorization:`Bearer ${token}`}});
+    try {
+      const res = await axios[method](url, payload, { headers: { Authorization: `Bearer ${token}` } });
       setMessage(isEdit ? "Job updated!" : "Job added!");
       if (onSuccess) onSuccess(res.data, isEdit);
       setForm({ position: '', company: '', status: 'applied', location: '', notes: '' });
@@ -94,24 +94,23 @@ useEffect(() => {
       setMessage(isEdit ? "Failed to update job" : "Failed to add job");
     }
   }
-return (
-  <>
-    <div className="container py-4">
-      <div className="row justify-content-center">
-        <div className="col-12 col-md-10 col-lg-8">
+  return (
+    <>
+      <div className="container mx-auto py-6 px-4">
+        <div className="max-w-4xl mx-auto">
           <form
             onSubmit={handleSubmit}
-            className="p-4 border rounded shadow-sm bg-light-brown"
+            className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm"
           >
             {/* Header */}
-            <h4 className="mb-4 text-center text-brown-dark fw-bold">
+            <h4 className="mb-6 text-center text-primary font-bold text-2xl">
               {initialData ? "Edit Job" : "Add Job"}
             </h4>
 
             {/* Position */}
-            <div className="mb-3">
-              <label htmlFor="position" className="form-label fw-semibold text-coffee">
-                Position <span className="text-caramel">*</span>
+            <div className="mb-4">
+              <label htmlFor="position" className="form-label">
+                Position <span className="text-red-500">*</span>
               </label>
               <input
                 id="position"
@@ -121,14 +120,14 @@ return (
                 onChange={handleChange}
                 placeholder="Enter position"
                 required
-                className="form-control border-coffee"
+                className="form-input"
               />
             </div>
 
             {/* Company */}
-            <div className="mb-3">
-              <label htmlFor="company" className="form-label fw-semibold text-coffee">
-                Company <span className="text-caramel">*</span>
+            <div className="mb-4">
+              <label htmlFor="company" className="form-label">
+                Company <span className="text-red-500">*</span>
               </label>
               <input
                 id="company"
@@ -138,14 +137,14 @@ return (
                 onChange={handleChange}
                 placeholder="Enter company name"
                 required
-                className="form-control border-coffee"
+                className="form-input"
               />
             </div>
 
             {/* Status + Location in one row on desktop */}
-            <div className="row">
-              <div className="col-12 col-md-6 mb-3">
-                <label htmlFor="status" className="form-label fw-semibold text-coffee">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="status" className="form-label">
                   Status
                 </label>
                 <select
@@ -153,7 +152,7 @@ return (
                   name="status"
                   value={form.status}
                   onChange={handleChange}
-                  className="form-select border-coffee"
+                  className="form-input"
                   aria-label="Job application status"
                 >
                   <option value="applied">Applied</option>
@@ -163,8 +162,8 @@ return (
                 </select>
               </div>
 
-              <div className="col-12 col-md-6 mb-3">
-                <label htmlFor="location" className="form-label fw-semibold text-coffee">
+              <div>
+                <label htmlFor="location" className="form-label">
                   Location
                 </label>
                 <input
@@ -174,14 +173,14 @@ return (
                   value={form.location}
                   onChange={handleChange}
                   placeholder="Enter location"
-                  className="form-control border-coffee"
+                  className="form-input"
                 />
               </div>
             </div>
 
             {/* Notes */}
-            <div className="mb-4">
-              <label htmlFor="notes" className="form-label fw-semibold text-coffee">
+            <div className="mb-6">
+              <label htmlFor="notes" className="form-label">
                 Notes
               </label>
               <textarea
@@ -190,26 +189,26 @@ return (
                 value={form.notes}
                 onChange={handleChange}
                 placeholder="Add any notes..."
-                className="form-control border-coffee"
+                className="form-input"
                 rows="3"
               />
             </div>
 
             {/* Job Description & Keywords */}
-            <div className="card mb-4 border-coffee">
-              <div className="card-header bg-coffee text-light fw-bold">
+            <div className="card border-accent mb-6">
+              <div className="bg-accent text-white font-bold p-4">
                 Job Description & Keywords
               </div>
-              <div className="card-body">
+              <div className="p-6">
                 {/* Job Description */}
-                <div className="mb-3">
-                  <label htmlFor="description" className="form-label fw-semibold text-coffee">
+                <div className="mb-4">
+                  <label htmlFor="description" className="form-label">
                     Job Description
                   </label>
                   <textarea
                     id="description"
                     name="description"
-                    className="form-control border-coffee"
+                    className="form-input"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Paste job description here"
@@ -219,23 +218,23 @@ return (
                 </div>
 
                 {/* Suggested Keywords */}
-                <div className="mb-3">
-                  <label className="form-label fw-semibold text-coffee">Suggested Keywords</label>
+                <div className="mb-4">
+                  <label className="form-label">Suggested Keywords</label>
                   {loadingKeywords && (
-                    <div className="text-mocha">Extracting keywords…</div>
+                    <div className="text-gray-600">Extracting keywords…</div>
                   )}
                   {keywordError && (
-                    <div className="text-caramel">{keywordError}</div>
+                    <div className="text-red-600">{keywordError}</div>
                   )}
 
-                  <div className="d-flex flex-wrap">
+                  <div className="flex flex-wrap gap-3">
                     {!loadingKeywords &&
                       suggestedKeywords.map((kw, i) => (
-                        <div key={i} className="form-check me-3 mb-2">
+                        <div key={i} className="flex items-center">
                           <input
                             type="checkbox"
                             id={`kw-${i}`}
-                            className="form-check-input border-coffee"
+                            className="w-4 h-4 text-accent border-gray-300 rounded focus:ring-accent mr-2 cursor-pointer"
                             checked={selectedKeywords.includes(kw)}
                             onChange={() => {
                               setSelectedKeywords((prev) =>
@@ -247,9 +246,9 @@ return (
                           />
                           <label
                             htmlFor={`kw-${i}`}
-                            className="form-check-label"
+                            className="cursor-pointer"
                           >
-                            <span className="badge bg-mocha text-dark">{kw}</span>
+                            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{kw}</span>
                           </label>
                         </div>
                       ))}
@@ -259,31 +258,29 @@ return (
             </div>
 
             {/* Buttons */}
-            <div className="d-flex justify-content-between">
+            <div className="flex justify-between gap-4">
               {onCancel && (
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="btn btn-outline-coffee"
+                  className="btn-outline"
                 >
                   Cancel
                 </button>
               )}
-              <button type="submit" className="btn btn-coffee ms-auto">
+              <button type="submit" className="btn-primary ml-auto">
                 {initialData ? "Update Job" : "Add Job"}
               </button>
             </div>
 
             {/* Success Message */}
             {message && (
-              <p className="mt-3 text-center text-mocha">{message}</p>
+              <p className="mt-4 text-center text-emerald-600 font-medium">{message}</p>
             )}
           </form>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
 
 }
-
