@@ -2,6 +2,8 @@
 // resumeController.js
 const User = require('../models/User');
 const JobApplication = require('../models/jobApplication');
+const fs = require('fs');
+const pdfParse = require('pdf-parse');
 
 // Get user's resume data
 const getUserResumeData = async (req, res) => {
@@ -84,9 +86,9 @@ const tailorResume = async (req, res) => {
 
   } catch (error) {
     console.error('Error tailoring resume:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error tailoring resume. Please try again.' 
+      message: 'Error tailoring resume. Please try again.'
     });
   }
 };
@@ -123,8 +125,79 @@ const generatePDF = async (req, res) => {
   }
 };
 
+// Get the actual resume content from uploaded file
+const getResumeContent = async (req, res) => {
+  try {
+    const userId = req.user.userId || req.user.id;
+    const user = await User.findById(userId).select('resumePath resumeFilename resumeKeywords');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    if (!user.resumePath) {
+      return res.status(404).json({
+        success: false,
+        message: 'No resume uploaded. Please upload a resume in your Profile first.',
+        noResume: true
+      });
+    }
+
+    // Check if file exists
+    if (!fs.existsSync(user.resumePath)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Resume file not found on server. Please re-upload your resume.',
+        noResume: true
+      });
+    }
+
+    // Read and parse the resume file
+    const fileBuffer = fs.readFileSync(user.resumePath);
+    let resumeText = '';
+
+    // Determine file type and parse accordingly
+    const filename = user.resumeFilename || '';
+    const isPdf = filename.toLowerCase().endsWith('.pdf');
+
+    if (isPdf) {
+      try {
+        const pdfData = await pdfParse(fileBuffer);
+        resumeText = pdfData.text;
+      } catch (pdfError) {
+        console.error('Error parsing PDF:', pdfError);
+        return res.status(500).json({
+          success: false,
+          message: 'Error parsing PDF file. Please try uploading a different format.'
+        });
+      }
+    } else {
+      // Assume text file
+      resumeText = fileBuffer.toString('utf8');
+    }
+
+    res.status(200).json({
+      success: true,
+      resumeContent: resumeText,
+      resumeFilename: user.resumeFilename,
+      resumeKeywords: user.resumeKeywords || []
+    });
+
+  } catch (error) {
+    console.error('Error fetching resume content:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching resume'
+    });
+  }
+};
+
 module.exports = {
   getUserResumeData,
+  getResumeContent,
   tailorResume,
   generatePDF
 };
