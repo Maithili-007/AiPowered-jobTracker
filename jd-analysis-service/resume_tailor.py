@@ -1,5 +1,21 @@
 
 # resume_tailor.py
+"""
+Resume Tailoring Service - IMPROVED VERSION
+============================================
+
+This module provides AI-powered resume tailoring with:
+- Skill-based keyword extraction (not generic noun phrases)
+- Normalized skill matching (React.js = react = ReactJS)
+- Accurate match scoring based on skill overlap
+
+KEY IMPROVEMENTS OVER ORIGINAL:
+1. Uses skill_taxonomy module for normalization and filtering
+2. Match score reflects actual skill alignment, not raw keyword count
+3. Filters out noise like "developed using", "experience with"
+4. Suggestions are based on real missing skills
+"""
+
 import spacy
 import re
 from collections import Counter
@@ -8,6 +24,19 @@ from nltk.corpus import stopwords
 import nltk
 from yake import KeywordExtractor
 from rake_nltk import Rake
+from spacy.matcher import PhraseMatcher
+
+# Import skill taxonomy for normalization and filtering
+# WHY: Centralizes all skill logic in one place for consistency
+from skill_taxonomy import (
+    SKILL_WHITELIST,
+    SKILL_ALIASES,
+    filter_and_normalize_skills,
+    extract_skills_from_text,
+    normalize_skill,
+    is_valid_skill,
+    get_skill_match_score
+)
 
 # Download required NLTK data
 try:
@@ -20,18 +49,89 @@ try:
 except LookupError:
     nltk.download('stopwords')
 
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab')
+
+
 class ResumeAITailor:
+    """
+    AI-powered resume tailoring engine with skill-based analysis.
+    
+    IMPROVEMENTS:
+    - Uses PhraseMatcher with skill whitelist instead of generic patterns
+    - Normalizes skill variants (React.js → react)
+    - Filters noise from YAKE/RAKE outputs
+    - Match score based on skill set overlap, not substring matching
+    """
+    
     def __init__(self):
         try:
             self.nlp = spacy.load('en_core_web_sm')
+            
+            # Initialize PhraseMatcher with skill whitelist
+            # WHY: More accurate than regex patterns - matches exact skill terms
+            self.phrase_matcher = PhraseMatcher(self.nlp.vocab, attr='LOWER')
+            skill_patterns = [self.nlp.make_doc(skill) for skill in SKILL_WHITELIST]
+            self.phrase_matcher.add("SKILLS", skill_patterns)
+            
         except OSError:
             print("Please install spaCy English model: python -m spacy download en_core_web_sm")
             self.nlp = None
+            self.phrase_matcher = None
 
         self.stop_words = set(stopwords.words('english'))
 
-    def extract_keywords_yake(self, text, max_keywords=20):
-        """Extract keywords using YAKE algorithm"""
+    def extract_skills_spacy(self, text: str) -> list:
+        """
+        Extract skills using spaCy PhraseMatcher.
+        
+        WHY THIS IS BETTER THAN ORIGINAL:
+        - Original used generic regex patterns that missed many skills
+        - PhraseMatcher matches ALL skills in our 200+ item whitelist
+        - Results are already normalized via LOWER attribute
+        
+        Args:
+            text: Job description or resume text
+            
+        Returns:
+            List of normalized skills found in text
+        """
+        if not self.nlp or not self.phrase_matcher:
+            return []
+        
+        doc = self.nlp(text)
+        matches = self.phrase_matcher(doc)
+        
+        skills = set()
+        for match_id, start, end in matches:
+            skill_text = doc[start:end].text.lower()
+            normalized = normalize_skill(skill_text)
+            if normalized:
+                skills.add(normalized)
+        
+        return list(skills)
+
+    def extract_keywords_yake(self, text: str, max_keywords: int = 20) -> list:
+        """
+        Extract keywords using YAKE, then filter through skill taxonomy.
+        
+        WHY FILTERING IS ADDED:
+        Original YAKE extraction returned phrases like:
+        - "developed using modern"
+        - "experience with the"
+        - "strong background in"
+        
+        Now we filter these through skill_taxonomy to keep only valid skills.
+        
+        Args:
+            text: Job description or resume text
+            max_keywords: Maximum keywords to extract before filtering
+            
+        Returns:
+            List of valid, normalized skills
+        """
         kw_extractor = KeywordExtractor(
             lan="en",
             n=3,
@@ -39,89 +139,158 @@ class ResumeAITailor:
             top=max_keywords
         )
         keywords = kw_extractor.extract_keywords(text)
-        return [kw[1] for kw in keywords]
+        raw_keywords = [kw[0] for kw in keywords]  # kw[0] is the keyword text
+        
+        # Filter through skill taxonomy
+        return filter_and_normalize_skills(raw_keywords)
 
-    def extract_keywords_rake(self, text):
-        """Extract keywords using RAKE algorithm"""
+    def extract_keywords_rake(self, text: str, max_phrases: int = 15) -> list:
+        """
+        Extract keywords using RAKE, then filter through skill taxonomy.
+        
+        WHY FILTERING IS ADDED:
+        RAKE extracts based on word co-occurrence which captures noise.
+        Now we validate each phrase against our skill whitelist.
+        
+        Args:
+            text: Job description or resume text
+            max_phrases: Maximum phrases to extract before filtering
+            
+        Returns:
+            List of valid, normalized skills
+        """
         r = Rake()
         r.extract_keywords_from_text(text)
-        return r.get_ranked_phrases()[:15]
+        raw_phrases = r.get_ranked_phrases()[:max_phrases]
+        
+        # Filter through skill taxonomy
+        return filter_and_normalize_skills(raw_phrases)
 
-    def analyze_job_requirements(self, job_description):
-        """Analyze job description to extract key requirements"""
+    def analyze_job_requirements(self, job_description: str) -> dict:
+        """
+        Analyze job description to extract skills and requirements.
+        
+        IMPROVEMENTS OVER ORIGINAL:
+        1. Uses PhraseMatcher instead of limited regex patterns
+        2. Combines multiple extraction methods for better coverage
+        3. All skills are normalized and deduplicated
+        4. No noise phrases in output
+        
+        Args:
+            job_description: Full job description text
+            
+        Returns:
+            Dictionary with:
+            - skills: List of normalized skills found
+            - keywords: Same as skills (normalized, no duplicates)
+            - requirements: Requirement sentences extracted
+        """
         if not self.nlp:
             return {"skills": [], "keywords": [], "requirements": []}
 
         doc = self.nlp(job_description)
 
-        # Extract skills and technical keywords
-        skills = []
-        keywords = []
+        # Collect skills from multiple methods
+        all_skills = set()
+        
+        # Method 1: PhraseMatcher (most accurate)
+        spacy_skills = self.extract_skills_spacy(job_description)
+        all_skills.update(spacy_skills)
+        
+        # Method 2: YAKE with filtering
+        yake_skills = self.extract_keywords_yake(job_description)
+        all_skills.update(yake_skills)
+        
+        # Method 3: RAKE with filtering
+        rake_skills = self.extract_keywords_rake(job_description)
+        all_skills.update(rake_skills)
+        
+        # Method 4: Direct whitelist scanning
+        direct_skills = extract_skills_from_text(job_description)
+        all_skills.update(direct_skills)
 
-        # Look for technical skills patterns
-        tech_patterns = [
-            r'\b(?:JavaScript|Python|React|Node\.js|MongoDB|Express|SQL|AWS|Docker|Git)\b',
-            r'\b(?:HTML|CSS|Bootstrap|Tailwind|API|REST|GraphQL|TypeScript)\b',
-            r'\b(?:Machine Learning|AI|NLP|Data Science|Analytics)\b'
-        ]
-
-        for pattern in tech_patterns:
-            matches = re.findall(pattern, job_description, re.IGNORECASE)
-            skills.extend(matches)
-
-        # Extract keywords using YAKE
-        yake_keywords = self.extract_keywords_yake(job_description)
-        keywords.extend(yake_keywords)
-
-        # Extract action verbs and requirements
+        # Extract requirement sentences (kept from original)
         requirements = []
         for sent in doc.sents:
-            if any(word in sent.text.lower() for word in ['responsible for', 'must have', 'required', 'experience with']):
+            sent_lower = sent.text.lower()
+            if any(phrase in sent_lower for phrase in [
+                'responsible for', 'must have', 'required', 
+                'experience with', 'proficient in', 'knowledge of'
+            ]):
                 requirements.append(sent.text.strip())
 
+        skills_list = sorted(list(all_skills))
+        
         return {
-            "skills": list(set(skills)),
-            "keywords": list(set(keywords))[:20],
+            "skills": skills_list,
+            "keywords": skills_list,  # Same as skills now (no noise distinction)
             "requirements": requirements[:5]
         }
 
-    def tailor_summary(self, original_summary, job_analysis, job_title, company_name):
-        """Generate tailored professional summary"""
-        job_keywords = job_analysis.get("keywords", [])[:10]
+    def tailor_summary(self, original_summary: str, job_analysis: dict, 
+                       job_title: str, company_name: str) -> str:
+        """
+        Generate tailored professional summary highlighting matched skills.
+        
+        IMPROVEMENTS:
+        - Uses actual extracted skills instead of generic placeholders
+        - Creates more natural-sounding summary
+        
+        Args:
+            original_summary: User's original summary text
+            job_analysis: Output from analyze_job_requirements
+            job_title: Target job title
+            company_name: Target company name
+            
+        Returns:
+            Tailored summary text
+        """
         job_skills = job_analysis.get("skills", [])[:5]
 
-        # Create enhanced summary
-        keyword_integration = f"Experienced professional with expertise in {', '.join(job_skills[:3])}"
-        company_mention = f"seeking to contribute to {company_name}'s success"
-        role_alignment = f"Strong background in {job_title.lower()} responsibilities"
+        if job_skills:
+            skill_text = ', '.join(job_skills[:3])
+            tailored = f"Experienced professional with expertise in {skill_text}. "
+        else:
+            tailored = f"Experienced {job_title} professional. "
+        
+        if company_name:
+            tailored += f"Seeking to contribute to {company_name}'s success "
+        
+        tailored += f"through technical excellence and proven track record in {job_title.lower()} responsibilities."
 
-        tailored_summary = f"{keyword_integration}. {role_alignment} with proven track record in {', '.join(job_keywords[:3])}. {company_mention} through innovative solutions and technical excellence."
+        return tailored
 
-        return tailored_summary
-
-    def enhance_experience(self, experience_list, job_analysis):
-        """Enhance work experience descriptions with job-relevant keywords"""
+    def enhance_experience(self, experience_list: list, job_analysis: dict) -> list:
+        """
+        Enhance work experience with relevant keywords.
+        
+        NOTE: This function is kept for compatibility but simplified.
+        The main improvement is in skill extraction and matching.
+        
+        Args:
+            experience_list: List of experience dictionaries
+            job_analysis: Output from analyze_job_requirements
+            
+        Returns:
+            Enhanced experience list
+        """
         enhanced_experience = []
-        job_keywords = [kw.lower() for kw in job_analysis.get("keywords", [])]
-        job_skills = [skill.lower() for skill in job_analysis.get("skills", [])]
+        job_skills = set(skill.lower() for skill in job_analysis.get("skills", []))
 
         for exp in experience_list:
-            enhanced_desc = exp.get("description", "")
-
-            # Add relevant keywords if missing
-            for keyword in job_keywords[:5]:
-                if keyword not in enhanced_desc.lower() and len(keyword) > 3:
-                    enhanced_desc += f" Utilized {keyword} to improve efficiency."
-
-            # Enhance with action verbs
-            action_verbs = ["Developed", "Implemented", "Optimized", "Enhanced", "Managed"]
-            if not any(verb in enhanced_desc for verb in action_verbs):
-                enhanced_desc = f"Developed and {enhanced_desc}"
+            desc = exp.get("description", "")
+            desc_lower = desc.lower()
+            
+            # Find which job skills are mentioned in this experience
+            relevant_skills = [
+                skill for skill in job_skills 
+                if skill in desc_lower
+            ]
 
             enhanced_exp = {
                 **exp,
-                "enhanced_description": enhanced_desc,
-                "relevant_keywords": [kw for kw in job_keywords if kw in enhanced_desc.lower()][:5],
+                "enhanced_description": desc,
+                "relevant_keywords": relevant_skills[:5],
                 "optimized_title": exp.get("title", "")
             }
 
@@ -129,65 +298,182 @@ class ResumeAITailor:
 
         return enhanced_experience
 
-    def optimize_skills(self, current_skills, job_analysis):
-        """Optimize skills section based on job requirements"""
+    def optimize_skills(self, current_skills: str, job_analysis: dict) -> str:
+        """
+        Optimize skills section by prioritizing job-relevant skills.
+        
+        Args:
+            current_skills: User's current skills string
+            job_analysis: Output from analyze_job_requirements
+            
+        Returns:
+            Optimized skills string with job-relevant skills prioritized
+        """
         job_skills = job_analysis.get("skills", [])
-        current_skills_list = current_skills if isinstance(current_skills, list) else [current_skills]
+        
+        # Parse current skills
+        if isinstance(current_skills, list):
+            current_list = current_skills
+        else:
+            current_list = [s.strip() for s in current_skills.split(',') if s.strip()]
 
-        # Merge and prioritize skills
-        all_skills = list(set(current_skills_list + job_skills))
+        # Normalize current skills
+        current_normalized = set()
+        for skill in current_list:
+            normalized = normalize_skill(skill)
+            if normalized:
+                current_normalized.add(normalized)
 
-        # Prioritize job-relevant skills
-        prioritized_skills = []
+        # Prioritize job skills that user has
+        prioritized = []
         for skill in job_skills:
-            if skill not in prioritized_skills:
-                prioritized_skills.append(skill)
+            if skill in current_normalized:
+                prioritized.append(skill)
+                current_normalized.discard(skill)
 
-        for skill in current_skills_list:
-            if skill not in prioritized_skills:
-                prioritized_skills.append(skill)
+        # Add remaining user skills
+        prioritized.extend(sorted(current_normalized))
 
-        return ", ".join(prioritized_skills[:15])
+        return ", ".join(prioritized[:15])
 
-    def calculate_match_score(self, resume_data, job_analysis):
-        """Calculate resume-job match score"""
-        resume_text = f"{resume_data.get('summary', '')} {' '.join([exp.get('description', '') for exp in resume_data.get('experience', [])])}"
-        job_keywords = job_analysis.get("keywords", [])
-        job_skills = job_analysis.get("skills", [])
+    def calculate_match_score(self, resume_data: dict, job_analysis: dict) -> float:
+        """
+        Calculate resume-job match score based on SKILL OVERLAP.
+        
+        THIS IS THE KEY IMPROVEMENT:
+        
+        BEFORE (problematic):
+        - Used substring matching: "React" in "React.js developer" counted
+        - "React" and "React.js" counted as TWO matches (inflated score)
+        - Generic phrases like "experience with" counted in keywords
+        
+        AFTER (accurate):
+        - Extracts normalized skills from both resume and job
+        - Uses set intersection for precise matching
+        - No duplicates, no noise, no inflated scores
+        
+        Args:
+            resume_data: User's resume data dictionary
+            job_analysis: Output from analyze_job_requirements
+            
+        Returns:
+            Match score as percentage (0-100)
+        """
+        # Build resume text
+        resume_text = resume_data.get('summary', '')
+        for exp in resume_data.get('experience', []):
+            resume_text += ' ' + exp.get('description', '')
+        resume_text += ' ' + str(resume_data.get('skills', ''))
+        
+        # Extract and normalize skills from resume
+        resume_skills = set(self.extract_skills_spacy(resume_text))
+        resume_skills.update(extract_skills_from_text(resume_text))
+        
+        # Get job skills (already normalized from job_analysis)
+        job_skills = set(job_analysis.get("skills", []))
+        
+        # Use skill_taxonomy's accurate matching function
+        match_result = get_skill_match_score(resume_skills, job_skills)
+        
+        return match_result["score"]
 
-        all_job_terms = job_keywords + job_skills
-        resume_text_lower = resume_text.lower()
+    def get_detailed_match(self, resume_data: dict, job_analysis: dict) -> dict:
+        """
+        Get detailed match information including matched/missing skills.
+        
+        NEW FUNCTION for enhanced match visibility.
+        
+        Args:
+            resume_data: User's resume data dictionary
+            job_analysis: Output from analyze_job_requirements
+            
+        Returns:
+            Dictionary with score, matched, missing, and extra skills
+        """
+        # Build resume text
+        resume_text = resume_data.get('summary', '')
+        for exp in resume_data.get('experience', []):
+            resume_text += ' ' + exp.get('description', '')
+        resume_text += ' ' + str(resume_data.get('skills', ''))
+        
+        # Extract skills
+        resume_skills = set(self.extract_skills_spacy(resume_text))
+        resume_skills.update(extract_skills_from_text(resume_text))
+        
+        job_skills = set(job_analysis.get("skills", []))
+        
+        return get_skill_match_score(resume_skills, job_skills)
 
-        matches = sum(1 for term in all_job_terms if term.lower() in resume_text_lower)
-        total_terms = len(all_job_terms)
-
-        if total_terms == 0:
-            return 0
-
-        score = (matches / total_terms) * 100
-        return min(score, 100)  # Cap at 100%
-
-    def generate_suggestions(self, resume_data, job_analysis, match_score):
-        """Generate improvement suggestions"""
+    def generate_suggestions(self, resume_data: dict, job_analysis: dict, 
+                             match_score: float) -> list:
+        """
+        Generate improvement suggestions based on skill gap analysis.
+        
+        IMPROVEMENTS:
+        - Suggestions are based on actual missing skills
+        - More actionable and specific recommendations
+        
+        Args:
+            resume_data: User's resume data
+            job_analysis: Job analysis output
+            match_score: Calculated match score
+            
+        Returns:
+            List of suggestion strings
+        """
         suggestions = []
+        
+        # Get detailed match for suggestions
+        match_details = self.get_detailed_match(resume_data, job_analysis)
+        missing_skills = match_details.get("missing", [])
 
-        if match_score < 70:
-            suggestions.append("Consider adding more job-relevant keywords to improve ATS compatibility")
+        if match_score < 50:
+            suggestions.append(
+                "Your skill match is below 50%. Consider adding relevant skills or "
+                "highlighting existing experience with the required technologies."
+            )
+        elif match_score < 70:
+            suggestions.append(
+                "Good foundation! Adding a few more relevant skills could significantly "
+                "improve your chances with ATS systems."
+            )
+        else:
+            suggestions.append(
+                "Strong match! Focus on quantifying your achievements with these skills."
+            )
 
-        job_skills = job_analysis.get("skills", [])
-        resume_skills = resume_data.get("skills", "")
-
-        missing_skills = [skill for skill in job_skills if skill.lower() not in resume_skills.lower()]
+        # Specific skill suggestions
         if missing_skills:
-            suggestions.append(f"Consider adding these relevant skills: {', '.join(missing_skills[:5])}")
+            top_missing = missing_skills[:5]
+            suggestions.append(
+                f"Consider highlighting experience with: {', '.join(top_missing)}"
+            )
 
-        if len(resume_data.get("experience", [])) < 3:
-            suggestions.append("Consider adding more detailed work experience descriptions")
+        # Experience suggestions
+        if len(resume_data.get("experience", [])) < 2:
+            suggestions.append(
+                "Consider adding more detailed work experience entries to showcase "
+                "your skill application."
+            )
 
         return suggestions
 
-    def tailor_resume(self, resume_data, job_description, job_title, company_name):
-        """Main function to tailor resume for specific job"""
+    def tailor_resume(self, resume_data: dict, job_description: str, 
+                      job_title: str, company_name: str) -> dict:
+        """
+        Main function to tailor resume for specific job.
+        
+        This orchestrates all the tailoring steps and returns comprehensive results.
+        
+        Args:
+            resume_data: User's resume data
+            job_description: Target job description
+            job_title: Target job title
+            company_name: Target company name
+            
+        Returns:
+            Dictionary with all tailored content and analysis
+        """
         # Analyze job requirements
         job_analysis = self.analyze_job_requirements(job_description)
 
@@ -209,8 +495,11 @@ class ResumeAITailor:
             job_analysis
         )
 
-        # Calculate match score
+        # Calculate accurate match score
         match_score = self.calculate_match_score(resume_data, job_analysis)
+        
+        # Get detailed match info
+        match_details = self.get_detailed_match(resume_data, job_analysis)
 
         # Generate suggestions
         suggestions = self.generate_suggestions(resume_data, job_analysis, match_score)
@@ -221,8 +510,10 @@ class ResumeAITailor:
             "optimized_skills": optimized_skills,
             "match_score": round(match_score, 1),
             "suggestions": suggestions,
-            "job_analysis": job_analysis
+            "job_analysis": job_analysis,
+            "match_details": match_details  # NEW: Detailed match breakdown
         }
+
 
 # Flask route handler
 from flask import request, jsonify
@@ -230,6 +521,7 @@ from flask import request, jsonify
 tailor_engine = ResumeAITailor()
 
 def tailor_resume_endpoint():
+    """Flask endpoint handler for resume tailoring."""
     try:
         data = request.get_json()
 

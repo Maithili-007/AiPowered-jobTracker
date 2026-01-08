@@ -16,7 +16,8 @@ export default function JobList() {
     if (!token) {
       return;
     }
-    axios.get('https://aipowered-jobtracker.onrender.com/api/jobs', { headers: { Authorization: `Bearer ${token}` } })
+    const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
+    axios.get(`${API_URL}/api/jobs`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         setJobs(res.data);
       })
@@ -154,11 +155,11 @@ export default function JobList() {
                     <p className="text-gray-700 mb-2">
                       {job.company} •{' '}
                       <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${{
-                          applied: 'bg-blue-100 text-blue-800',
-                          interviewing: 'bg-yellow-100 text-yellow-800',
-                          offer: 'bg-emerald-100 text-emerald-800',
-                          rejected: 'bg-gray-100 text-gray-800'
-                        }[job.status] || 'bg-gray-100 text-gray-800'
+                        applied: 'bg-blue-100 text-blue-800',
+                        interviewing: 'bg-yellow-100 text-yellow-800',
+                        offer: 'bg-emerald-100 text-emerald-800',
+                        rejected: 'bg-gray-100 text-gray-800'
+                      }[job.status] || 'bg-gray-100 text-gray-800'
                         }`}>
                         {job.status}
                       </span>

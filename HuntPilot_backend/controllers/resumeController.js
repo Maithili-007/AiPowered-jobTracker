@@ -47,7 +47,8 @@ const tailorResume = async (req, res) => {
     const userId = req.user.userId;
 
     // Call Python AI service for resume tailoring
-    const response = await fetch('https://aipowered-jobtracker-1.onrender.com/api/tailor-resume', {
+    const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL || 'https://aipowered-jobtracker-1.onrender.com';
+    const response = await fetch(`${ANALYSIS_SERVICE_URL}/api/tailor-resume`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

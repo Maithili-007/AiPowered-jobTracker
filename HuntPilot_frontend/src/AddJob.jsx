@@ -42,7 +42,8 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
       setLoadingKeywords(true);//we are now starting to extract keywords
       setKeywordError('');
       try {
-        const resp = await fetch('https://aipowered-jobtracker-1.onrender.com/extract-keywords', {
+        const ANALYSIS_URL = import.meta.env.VITE_ANALYSIS_API_URL || "https://aipowered-jobtracker-1.onrender.com";
+        const resp = await fetch(`${ANALYSIS_URL}/extract-keywords`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -70,7 +71,8 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isEdit = !!(initialData && initialData._id);
-    const url = isEdit ? `https://aipowered-jobtracker.onrender.com/api/jobs/${initialData._id}` : 'https://aipowered-jobtracker.onrender.com/api/jobs';
+    const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
+    const url = isEdit ? `${API_URL}/api/jobs/${initialData._id}` : `${API_URL}/api/jobs`;
     const method = isEdit ? "put" : "post";
 
     const payload = {

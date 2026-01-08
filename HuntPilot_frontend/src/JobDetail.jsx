@@ -15,8 +15,9 @@ export default function JobDetail() {
 
   // Fetch job details
   useEffect(() => {
+    const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
     axios
-      .get(`https://aipowered-jobtracker.onrender.com/api/jobs/${id}`, {
+      .get(`${API_URL}/api/jobs/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setJob(res.data))
@@ -27,8 +28,9 @@ export default function JobDetail() {
   useEffect(() => {
     async function fetchMatch() {
       try {
+        const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
         const res = await fetch(
-          `https://aipowered-jobtracker.onrender.com/api/jobs/${id}/match-profile`,
+          `${API_URL}/api/jobs/${id}/match-profile`,
           {
             method: 'POST',
             headers: {
@@ -64,8 +66,9 @@ export default function JobDetail() {
   const handleDeleteClick = async () => {
     if (!window.confirm('Are you sure you want to delete this job?')) return;
     try {
+      const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
       await axios.delete(
-        `https://aipowered-jobtracker.onrender.com/api/jobs/${id}`,
+        `${API_URL}/api/jobs/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       navigate('/jobs'); // redirect after delete
@@ -134,11 +137,11 @@ export default function JobDetail() {
                 <div>
                   <strong>Status:</strong>{" "}
                   <span className={`inline-block ml-2 px-3 py-1 rounded-full text-sm font-medium ${{
-                      applied: "bg-blue-100 text-blue-800",
-                      interviewing: "bg-yellow-100 text-yellow-800",
-                      offer: "bg-emerald-100 text-emerald-800",
-                      rejected: "bg-gray-100 text-gray-800"
-                    }[job.status] || "bg-gray-100 text-gray-800"
+                    applied: "bg-blue-100 text-blue-800",
+                    interviewing: "bg-yellow-100 text-yellow-800",
+                    offer: "bg-emerald-100 text-emerald-800",
+                    rejected: "bg-gray-100 text-gray-800"
+                  }[job.status] || "bg-gray-100 text-gray-800"
                     }`}>
                     {job.status}
                   </span>

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-const API_BASE_URL = 'https://aipowered-jobtracker.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://aipowered-jobtracker.onrender.com';
 
 const ResumeEditor = () => {
   const { id: jobId } = useParams();

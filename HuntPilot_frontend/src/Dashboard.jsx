@@ -25,7 +25,8 @@ export default function Dashboard() {
   useEffect(() => {
     console.log("Token in effect:", token);
     if (!token) return;
-    axios.get('https://aipowered-jobtracker.onrender.com/api/jobs', {
+    const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
+    axios.get(`${API_URL}/api/jobs`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => {

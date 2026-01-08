@@ -14,7 +14,8 @@ export default function Signup() {
     e.preventDefault();
 
     try {
-      await axios.post("https://aipowered-jobtracker.onrender.com/api/auth/signup", form);
+      const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
+      await axios.post(`${API_URL}/api/auth/signup`, form);
       setMessage("Account created! Please login.");
       setForm({ name: "", email: "", password: "" });
     }

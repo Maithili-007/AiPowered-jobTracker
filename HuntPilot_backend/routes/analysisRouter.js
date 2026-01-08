@@ -5,7 +5,8 @@ const analysisRouter = express.Router();
 analysisRouter.post('/extract', async (req, res) => {
   try {
     const { description } = req.body;
-    const { data } = await axios.post('https://aipowered-jobtracker-1.onrender.com/extract-keywords', { description });
+    const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL || 'https://aipowered-jobtracker-1.onrender.com';
+    const { data } = await axios.post(`${ANALYSIS_SERVICE_URL}/extract-keywords`, { description });
     res.json(data);
   } catch (err) {
     console.error(err);
