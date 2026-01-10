@@ -4,7 +4,7 @@ import AuthContext from './AuthContext';
 import { useNavigate, NavLink } from 'react-router-dom';
 
 export default function AddJob({ initialData, onSuccess, onCancel }) {
-  const [form, setForm] = useState({ position: '', company: '', status: 'applied', location: '', notes: '', ...initialData || {} });
+  const [form, setForm] = useState({ position: '', company: '', status: 'applied', location: '', notes: '', ...initialData || {} });// if initial data,rewrite all fields with that data or empty
   const [message, setMessage] = useState('');
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
     });
     setDescription(initialData?.description || '');
     setSelectedKeywords(initialData?.keywords || []);
-  }, [initialData]);
+  }, [initialData]);//fill initial data if clicked on edit or empty
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });//curly brackets because you're creating a new object.

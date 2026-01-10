@@ -46,6 +46,14 @@ const tailorResume = async (req, res) => {
     const { resumeData, jobDescription, jobTitle, company } = req.body;
     const userId = req.user.userId;
 
+    // Validate required fields
+    if (!resumeData || !jobDescription || !jobTitle) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: resumeData, jobDescription, and jobTitle are required'
+      });
+    }
+
     // Call Python AI service for resume tailoring
     const ANALYSIS_SERVICE_URL = process.env.ANALYSIS_SERVICE_URL || 'https://aipowered-jobtracker-1.onrender.com';
     const response = await fetch(`${ANALYSIS_SERVICE_URL}/api/tailor-resume`, {
@@ -57,25 +65,37 @@ const tailorResume = async (req, res) => {
         resume_data: resumeData,
         job_description: jobDescription,
         job_title: jobTitle,
-        company_name: company
+        company_name: company || ''
       })
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('AI service error:', errorText);
       throw new Error('AI service error');
     }
 
     const aiResult = await response.json();
 
-    // Enhance the tailored content with structured format
+    // Build the tailored resume response
+    // Handle both structured and raw content scenarios
     const tailoredResume = {
-      summary: aiResult.tailored_summary || resumeData.summary,
-      experience: enhanceExperience(resumeData.experience, aiResult.enhanced_experience || []),
-      skills: aiResult.optimized_skills || resumeData.skills,
-      education: resumeData.education, // Keep education as is
-      projects: resumeData.projects,
+      // Use AI-generated summary if available
+      summary: aiResult.tailored_summary || resumeData.summary || resumeData.rawContent?.substring(0, 500) || '',
+      // Use enhanced experience from AI or fallback to original
+      experience: enhanceExperience(
+        resumeData.experience || [],
+        aiResult.enhanced_experience || []
+      ),
+      // Use optimized skills from AI or fallback
+      skills: aiResult.optimized_skills || resumeData.skills || '',
+      education: resumeData.education || [],
+      projects: resumeData.projects || [],
       matchScore: aiResult.match_score || 0,
-      suggestions: aiResult.suggestions || []
+      suggestions: aiResult.suggestions || [],
+      // Include match details for frontend display
+      matchDetails: aiResult.match_details || null,
+      jobAnalysis: aiResult.job_analysis || null
     };
 
     res.status(200).json({

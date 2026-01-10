@@ -106,7 +106,13 @@ const ResumeEditor = () => {
       return;
     }
 
+    if (!resumeContent || !resumeContent.trim()) {
+      setError('No resume content found. Please ensure your resume is loaded.');
+      return;
+    }
+
     setTailoring(true);
+    setError(null); // Clear any previous errors
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/api/resume/tailor`, {
@@ -125,42 +131,57 @@ const ResumeEditor = () => {
 
       const result = await response.json();
 
+      if (!response.ok) {
+        // Handle HTTP error responses
+        setError(result.message || 'Server error occurred. Please try again.');
+        return;
+      }
+
       if (result.success && result.tailoredResume) {
         // Format the tailored content for display
-        const formattedContent = formatTailoredContent(result.tailoredResume);
+        const formattedContent = formatTailoredContent(result.tailoredResume, resumeContent);
         setTailoredContent({
           ...result.tailoredResume,
           editedContent: formattedContent
         });
         setResumeContent(formattedContent);
       } else {
-        setError('Failed to generate tailored resume. Please try again.');
+        setError(result.message || 'Failed to generate tailored resume. Please try again.');
       }
     } catch (err) {
       console.error('Error tailoring resume:', err);
-      setError('Error generating tailored resume');
+      setError('Network error while generating tailored resume. Please check your connection and try again.');
     } finally {
       setTailoring(false);
     }
   };
 
   // Format AI-tailored content into readable text
-  const formatTailoredContent = (tailored) => {
+  // Handles both structured data (summary, experience, skills) and raw content scenarios
+  const formatTailoredContent = (tailored, originalContent = '') => {
     let content = '';
 
+    // Add the tailored professional summary if available
     if (tailored.summary) {
       content += `PROFESSIONAL SUMMARY\n${'='.repeat(50)}\n${tailored.summary}\n\n`;
     }
 
+    // Add experience section if we have structured experience data
     if (tailored.experience && tailored.experience.length > 0) {
       content += `EXPERIENCE\n${'='.repeat(50)}\n`;
       tailored.experience.forEach(exp => {
-        content += `${exp.title || 'Position'}\n`;
+        content += `${exp.title || exp.optimized_title || 'Position'}\n`;
         content += `${exp.company || 'Company'} | ${exp.duration || ''}\n`;
-        content += `${exp.description || ''}\n\n`;
+        content += `${exp.enhanced_description || exp.description || ''}\n`;
+        // Show relevant keywords if available
+        if (exp.relevant_keywords && exp.relevant_keywords.length > 0) {
+          content += `Keywords: ${exp.relevant_keywords.join(', ')}\n`;
+        }
+        content += '\n';
       });
     }
 
+    // Add skills section
     if (tailored.skills) {
       content += `SKILLS\n${'='.repeat(50)}\n`;
       if (Array.isArray(tailored.skills)) {
@@ -171,6 +192,7 @@ const ResumeEditor = () => {
       content += '\n\n';
     }
 
+    // Add education section if available
     if (tailored.education && tailored.education.length > 0) {
       content += `EDUCATION\n${'='.repeat(50)}\n`;
       tailored.education.forEach(edu => {
@@ -179,7 +201,22 @@ const ResumeEditor = () => {
       });
     }
 
-    return content || resumeContent;
+    // Add match details if available (from AI analysis)
+    if (tailored.matchDetails) {
+      content += `\nMATCH ANALYSIS\n${'='.repeat(50)}\n`;
+      if (tailored.matchDetails.matched_skills && tailored.matchDetails.matched_skills.length > 0) {
+        content += `✓ Matched Skills: ${tailored.matchDetails.matched_skills.join(', ')}\n`;
+      }
+      if (tailored.matchDetails.missing_skills && tailored.matchDetails.missing_skills.length > 0) {
+        content += `✗ Skills to Add: ${tailored.matchDetails.missing_skills.join(', ')}\n`;
+      }
+      if (tailored.matchDetails.extra_skills && tailored.matchDetails.extra_skills.length > 0) {
+        content += `★ Bonus Skills: ${tailored.matchDetails.extra_skills.join(', ')}\n`;
+      }
+    }
+
+    // If we have content, use it; otherwise fall back to original resume
+    return content.trim() || originalContent;
   };
 
   // Download resume as PDF
