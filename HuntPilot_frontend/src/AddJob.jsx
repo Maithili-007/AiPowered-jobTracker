@@ -25,7 +25,7 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
       notes: "",
       ...(initialData || {})
     });
-    setDescription(initialData?.description || '');
+    setDescription(initialData?.jobDescription || initialData?.description || '');
     setSelectedKeywords(initialData?.keywords || []);
   }, [initialData]);//fill initial data if clicked on edit or empty
 
@@ -77,7 +77,7 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
 
     const payload = {
       ...form,
-      description,
+      jobDescription: description,
       keywords: selectedKeywords
     };
 
