@@ -111,6 +111,21 @@ const ResumeEditor = () => {
       return;
     }
 
+    // Get job description - check multiple possible field names and fallbacks
+    const jobDescription = jobData.jobDescription || jobData.description || jobData.notes || '';
+    const jobTitle = jobData.position || jobData.title || '';
+
+    // Validate that we have the essential data for tailoring
+    if (!jobDescription.trim()) {
+      setError('No job description found. Please add a job description to this job application to use AI tailoring. You can update the job in your Jobs list with the job posting details.');
+      return;
+    }
+
+    if (!jobTitle.trim()) {
+      setError('No job title found. Please ensure the job has a position/title specified.');
+      return;
+    }
+
     setTailoring(true);
     setError(null); // Clear any previous errors
     try {
@@ -123,8 +138,8 @@ const ResumeEditor = () => {
         },
         body: JSON.stringify({
           resumeData: { rawContent: resumeContent },
-          jobDescription: jobData.description || jobData.jobDescription || '',
-          jobTitle: jobData.position || jobData.title || '',
+          jobDescription: jobDescription,
+          jobTitle: jobTitle,
           company: jobData.company || ''
         })
       });
