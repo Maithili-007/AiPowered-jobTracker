@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import nodeApi from './api/clientNode';
 import AuthContext from './AuthContext';
 import AddJob from './AddJob';
 
@@ -15,9 +15,8 @@ export default function JobDetail() {
 
   // Fetch job details
   useEffect(() => {
-    const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-    axios
-      .get(`${API_URL}/api/jobs/${id}`, {
+    nodeApi
+      .get(`/api/jobs/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setJob(res.data))
@@ -28,24 +27,16 @@ export default function JobDetail() {
   useEffect(() => {
     async function fetchMatch() {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-        const res = await fetch(
-          `${API_URL}/api/jobs/${id}/match-profile`,
+        const res = await nodeApi.post(
+          `/api/jobs/${id}/match-profile`,
+          {},
           {
-            method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           }
         );
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
-        setMatchResult(data);
+        setMatchResult(res.data);
       } catch (error) {
         console.error('Match fetch error:', error);
         setMatchResult({ error: 'Failed to load match score' });
@@ -66,9 +57,8 @@ export default function JobDetail() {
   const handleDeleteClick = async () => {
     if (!window.confirm('Are you sure you want to delete this job?')) return;
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-      await axios.delete(
-        `${API_URL}/api/jobs/${id}`,
+      await nodeApi.delete(
+        `/api/jobs/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       navigate('/jobs'); // redirect after delete

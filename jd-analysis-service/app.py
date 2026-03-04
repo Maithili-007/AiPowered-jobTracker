@@ -1163,4 +1163,4 @@ if __name__ == '__main__':
     #   const PORT = process.env.PORT || 5000;
     #   app.listen(PORT, '0.0.0.0', () => console.log(`Server on ${PORT}`));
     
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), debug=True)

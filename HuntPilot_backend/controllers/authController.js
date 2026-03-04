@@ -3,6 +3,19 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 
+const getAuthResponse = (user) => {
+  const token = jwt.sign(
+    { id: user._id, email: user.email, name: user.name },
+    process.env.JWT_SECRET,
+    { expiresIn: '12h' }
+  );
+
+  return {
+    token,
+    user: { id: user._id, name: user.name, email: user.email },
+  };
+};
+
 // Validation arrays
 exports.signupValidators = [
    body('name').notEmpty().withMessage('Name is required'),//function that sets validation rules for a field in the (req.body).
@@ -60,13 +73,27 @@ exports.postLogin = async (req, res) => {
     if (!isMatch)
       return res.status(401).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign(
-      { id: user._id, email: user.email, name: user.name },// payload object,(user data) stored inside the token
-      process.env.JWT_SECRET,// secret key
-      { expiresIn: '12h' }//options object
-    );
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json(getAuthResponse(user));
   } catch {
     res.status(500).json({ message: 'Login failed' });
+  }
+};
+
+exports.postDemoLogin = async (req, res) => {
+  const demoEmail = process.env.DEMO_LOGIN_EMAIL;
+
+  if (!demoEmail) {
+    return res.status(500).json({ message: 'Demo login is not configured' });
+  }
+
+  try {
+    const user = await User.findOne({ email: demoEmail });
+    if (!user) {
+      return res.status(404).json({ message: 'Demo user not found' });
+    }
+
+    return res.json(getAuthResponse(user));
+  } catch {
+    return res.status(500).json({ message: 'Demo login failed' });
   }
 };

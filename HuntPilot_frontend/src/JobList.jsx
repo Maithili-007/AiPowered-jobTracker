@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import nodeApi from './api/clientNode';
 import AuthContext from './AuthContext';
 
 export default function JobList() {
@@ -16,8 +16,7 @@ export default function JobList() {
     if (!token) {
       return;
     }
-    const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-    axios.get(`${API_URL}/api/jobs`, { headers: { Authorization: `Bearer ${token}` } })
+    nodeApi.get('/api/jobs', { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         setJobs(res.data);
       })

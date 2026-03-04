@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 
 jobRouter.get('/',auth, jobController.getJobs);//If the auth middleware doesn't work, then the route will never reach jobController.getJobs
 jobRouter.post('/',auth, jobController.createJob);
+jobRouter.post('/extract-metadata',auth, jobController.extractMetadata);
 jobRouter.post('/:jobId/match-profile',auth, jobController.matchResume);
 jobRouter.get('/:id',auth, jobController.getJobById);
 jobRouter.put('/:id',auth, jobController.updateJob);
