@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import nodeApi from './api/clientNode';
 import AuthContext from './AuthContext';
 
 export default function ProfileResumeUpload() {
@@ -12,8 +12,7 @@ export default function ProfileResumeUpload() {
   useEffect(() => {
     async function fetchResume() {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-        const res = await axios.get(`${API_URL}/api/profile/resume`, {
+        const res = await nodeApi.get('/api/profile/resume', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setResumeFilename(res.data.resumeFilename);
@@ -34,8 +33,7 @@ export default function ProfileResumeUpload() {
     formData.append('resume', file);//Adds the file to the form data under the key "resume"
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-      const res = await axios.post(`${API_URL}/api/profile/upload-resume`, formData, {
+      const res = await nodeApi.post('/api/profile/upload-resume', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -53,8 +51,7 @@ export default function ProfileResumeUpload() {
 
   const handleDelete = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-      const res = await axios.delete(`${API_URL}/api/profile/resume`, {
+      const res = await nodeApi.delete('/api/profile/resume', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage(res.data.message);
@@ -68,8 +65,7 @@ export default function ProfileResumeUpload() {
 
   const handleDownload = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-      const response = await axios.get(`${API_URL}/api/profile/resume/download`, {
+      const response = await nodeApi.get('/api/profile/resume/download', {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'//tells Axios to handle the file as binary data
       });

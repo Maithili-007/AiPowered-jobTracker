@@ -1,20 +1,23 @@
 import React, { useState, useContext } from "react";
-import axios from "axios";
+import nodeApi from "./api/clientNode";
 import AuthContext from "./AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = async e => {
     e.preventDefault();
+    setMessage("");
+    setIsSubmitting(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-      const res = await axios.post(`${API_URL}/api/auth/login`, form);
+      const res = await nodeApi.post('/api/auth/login', form);
       login(res.data);
       navigate("/");
     } catch (err) {
@@ -23,8 +26,25 @@ export default function Login() {
       } else {
         setMessage("Login failed: " + (err.response ? err.response.data.message : "Server error"));
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const handleDemoLogin = async () => {
+    setMessage("");
+    setIsDemoLoading(true);
+    try {
+      const res = await nodeApi.post('/api/auth/demo-login');
+      login(res.data);
+      navigate("/");
+    } catch (err) {
+      setMessage("Demo login failed: " + (err.response ? err.response.data.message : "Server error"));
+    } finally {
+      setIsDemoLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md">
@@ -70,8 +90,17 @@ export default function Login() {
           </div>
 
           {/* Login Button */}
-          <button type="submit" className="btn-primary w-full">
-            Log In
+          <button type="submit" className="btn-primary w-full" disabled={isSubmitting || isDemoLoading}>
+            {isSubmitting ? "Logging in..." : "Log In"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            className="mt-3 w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 font-semibold text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={isSubmitting || isDemoLoading}
+          >
+            {isDemoLoading ? "Signing into demo..." : "Try Demo"}
           </button>
 
           {/* Message */}

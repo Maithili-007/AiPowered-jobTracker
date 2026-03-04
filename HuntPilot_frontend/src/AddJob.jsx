@@ -1,5 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import nodeApi from './api/clientNode';
+import pythonApi from './api/clientPython';
 import AuthContext from './AuthContext';
 import { useNavigate, NavLink } from 'react-router-dom';
 
@@ -14,6 +15,9 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [loadingKeywords, setLoadingKeywords] = useState(false);
   const [keywordError, setKeywordError] = useState('');
+  const [loadingMetadata, setLoadingMetadata] = useState(false);
+  const [metadataError, setMetadataError] = useState('');
+  const lastMetadataDescriptionRef = useRef('');
 
 
   useEffect(() => {
@@ -27,6 +31,9 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
     });
     setDescription(initialData?.jobDescription || initialData?.description || '');
     setSelectedKeywords(initialData?.keywords || []);
+    setMetadataError('');
+    setLoadingMetadata(false);
+    lastMetadataDescriptionRef.current = '';
   }, [initialData]);//fill initial data if clicked on edit or empty
 
   const handleChange = (e) => {
@@ -42,17 +49,16 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
       setLoadingKeywords(true);//we are now starting to extract keywords
       setKeywordError('');
       try {
-        const ANALYSIS_URL = import.meta.env.VITE_ANALYSIS_API_URL || "https://aipowered-jobtracker-1.onrender.com";
-        const resp = await fetch(`${ANALYSIS_URL}/extract-keywords`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ description }),
-        });
-        if (!resp.ok) throw new Error(`Status ${resp.status}`);
-        const { keywords } = await resp.json();
+        const resp = await pythonApi.post(
+          '/extract-keywords',
+          { description },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const { keywords } = resp.data;
         setSuggestedKeywords(keywords);
         if (selectedKeywords.length === 0) {
           //setSelectedKeywords(keywords.slice(0, 5));
@@ -68,11 +74,60 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
     return () => clearTimeout(timeout);//cancel the previous timeout before setting a new one
   }, [description, token]);
 
+  useEffect(() => {
+    const trimmedDescription = description.trim();
+    if (!trimmedDescription || trimmedDescription.length < 20) {
+      setLoadingMetadata(false);
+      setMetadataError('');
+      return;
+    }
+
+    if (trimmedDescription === lastMetadataDescriptionRef.current) {
+      return;
+    }
+
+    let isCancelled = false;
+    const timeout = setTimeout(async () => {
+      setLoadingMetadata(true);
+      setMetadataError('');
+      try {
+        const response = await nodeApi.post(
+          '/api/jobs/extract-metadata',
+          { jobDescription: trimmedDescription },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const metadata = response?.data?.data || {};
+        if (!isCancelled) {
+          setForm((prev) => ({
+            ...prev,
+            position: metadata.position || '',
+            company: metadata.companyName || '',
+            location: metadata.location || '',
+          }));
+          lastMetadataDescriptionRef.current = trimmedDescription;
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          setMetadataError('Failed to auto-fill job details');
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoadingMetadata(false);
+        }
+      }
+    }, 700);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [description, token]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isEdit = !!(initialData && initialData._id);
-    const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-    const url = isEdit ? `${API_URL}/api/jobs/${initialData._id}` : `${API_URL}/api/jobs`;
+    const url = isEdit ? `/api/jobs/${initialData._id}` : '/api/jobs';
     const method = isEdit ? "put" : "post";
 
     const payload = {
@@ -83,13 +138,16 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
 
 
     try {
-      const res = await axios[method](url, payload, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await nodeApi[method](url, payload, { headers: { Authorization: `Bearer ${token}` } });
       setMessage(isEdit ? "Job updated!" : "Job added!");
       if (onSuccess) onSuccess(res.data, isEdit);
       setForm({ position: '', company: '', status: 'applied', location: '', notes: '' });
       setDescription('');
       setSuggestedKeywords([]);
       setSelectedKeywords([]);
+      setMetadataError('');
+      setLoadingMetadata(false);
+      lastMetadataDescriptionRef.current = '';
       navigate('/dashboard');
     }
     catch {
@@ -217,6 +275,12 @@ export default function AddJob({ initialData, onSuccess, onCancel }) {
                     rows={5}
                     required
                   />
+                  {loadingMetadata && (
+                    <div className="text-gray-600 mt-2">Extracting job details...</div>
+                  )}
+                  {metadataError && (
+                    <div className="text-red-600 mt-2">{metadataError}</div>
+                  )}
                 </div>
 
                 {/* Suggested Keywords */}

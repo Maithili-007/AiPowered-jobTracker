@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import nodeApi from "./api/clientNode";
 import { useNavigate, Link, NavLink } from 'react-router-dom';
 
 export default function Signup() {
@@ -14,8 +14,7 @@ export default function Signup() {
     e.preventDefault();
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-      await axios.post(`${API_URL}/api/auth/signup`, form);
+      await nodeApi.post('/api/auth/signup', form);
       setMessage("Account created! Please login.");
       setForm({ name: "", email: "", password: "" });
     }

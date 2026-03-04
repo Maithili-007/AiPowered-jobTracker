@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import nodeApi from './api/clientNode';
 import AuthContext from './AuthContext';
 
 const statusBadgeColors = {
@@ -25,8 +25,7 @@ export default function Dashboard() {
   useEffect(() => {
     console.log("Token in effect:", token);
     if (!token) return;
-    const API_URL = import.meta.env.VITE_API_URL || "https://aipowered-jobtracker.onrender.com";
-    axios.get(`${API_URL}/api/jobs`, {
+    nodeApi.get('/api/jobs', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => {

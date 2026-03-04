@@ -1,5 +1,6 @@
 const JobApplication = require('../models/jobApplication');
 const User = require('../models/User');
+const { extractJobMetadata } = require('../services/jobMetadataService');
 
 //add new job
 exports.createJob = async (req,res,next)=>{
@@ -80,4 +81,34 @@ exports.matchResume = async (req,res,next)=>{
     res.status(500).json({ error: 'Matching failed' });
   }
 }
+
+exports.extractMetadata = async (req, res) => {
+  try {
+    const jobDescription = (req.body?.jobDescription || '').trim();
+    if (!jobDescription) {
+      return res.status(400).json({
+        success: false,
+        message: 'jobDescription is required',
+      });
+    }
+
+    const metadata = await extractJobMetadata(jobDescription);
+
+    return res.json({
+      success: true,
+      data: metadata,
+    });
+  } catch (err) {
+    console.error('Metadata extraction failed:', err.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to extract job metadata',
+      data: {
+        position: '',
+        companyName: '',
+        location: '',
+      },
+    });
+  }
+};
 

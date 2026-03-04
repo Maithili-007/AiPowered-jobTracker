@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://aipowered-jobtracker.onrender.com';
+import nodeApi from './api/clientNode';
 
 const ResumeEditor = () => {
   const { id: jobId } = useParams();
@@ -30,15 +29,14 @@ const ResumeEditor = () => {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/resume/content`, {
+      const response = await nodeApi.get('/api/resume/content', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
+      if (!data.success) {
         if (data.noResume) {
           setNoResume(true);
         } else {
@@ -51,7 +49,12 @@ const ResumeEditor = () => {
       setResumeFilename(data.resumeFilename || 'resume');
     } catch (err) {
       console.error('Error fetching resume:', err);
-      setError('Network error while fetching resume');
+      const data = err?.response?.data;
+      if (data?.noResume) {
+        setNoResume(true);
+      } else {
+        setError(data?.message || 'Network error while fetching resume');
+      }
     }
   }, []);
 
@@ -61,17 +64,14 @@ const ResumeEditor = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/jobs/${jobId}`, {
+      const response = await nodeApi.get(`/api/jobs/${jobId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setJobData(data);
-        localStorage.setItem('currentJobForTailoring', JSON.stringify(data));
-      }
+      const data = response.data;
+      setJobData(data);
+      localStorage.setItem('currentJobForTailoring', JSON.stringify(data));
     } catch (err) {
       console.error('Error fetching job details:', err);
     }
@@ -130,27 +130,22 @@ const ResumeEditor = () => {
     setError(null); // Clear any previous errors
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/resume/tailor`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
+      const response = await nodeApi.post(
+        '/api/resume/tailor',
+        {
           resumeData: { rawContent: resumeContent },
           jobDescription: jobDescription,
           jobTitle: jobTitle,
           company: jobData.company || ''
-        })
-      });
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        // Handle HTTP error responses
-        setError(result.message || 'Server error occurred. Please try again.');
-        return;
-      }
+      const result = response.data;
 
       if (result.success && result.tailoredResume) {
         // Format the tailored content for display
@@ -165,7 +160,7 @@ const ResumeEditor = () => {
       }
     } catch (err) {
       console.error('Error tailoring resume:', err);
-      setError('Network error while generating tailored resume. Please check your connection and try again.');
+      setError(err?.response?.data?.message || 'Network error while generating tailored resume. Please check your connection and try again.');
     } finally {
       setTailoring(false);
     }
